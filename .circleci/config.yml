@@ -29,11 +29,11 @@ jobs:
       - aws-cloudformation/deploy:
           stack-name: "lecture-13"
           template-file-path: "cloudformation/lect10-vpc.yml"
- #say-hell:
-    #steps:
-      #- run:
-          #name: "Say hell"
-          #command: "echo Hell, World!"
+ say-hell:
+    steps:
+      - run:
+          name: "Say hell"
+          command: "echo Hell, World!"
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
@@ -42,4 +42,4 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - execute-cfn
-      #- say-hell
+      - say-hell
