@@ -29,7 +29,7 @@ jobs:
       - aws-cloudformation/deploy:
           stack-name: "lecture-13"
           template-file-path: "cloudformation/lect10-vpc.yml"
- say-hell:
+  say-hell:
     steps:
       - run:
           name: "Say hell"
