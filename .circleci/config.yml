@@ -12,10 +12,10 @@ jobs:
   execute-cfn:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/executor-intro/ & https://circleci.com/docs/configuration-reference/#executor-job
-    docker:
+    #docker:
       # Specify the version you desire here
       # See: https://circleci.com/developer/images/image/cimg/base
-      - image: cimg/base:current
+      #- image: cimg/base:current
 
     # Add steps to the job
     # See: https://circleci.com/docs/jobs-steps/#steps-overview & https://circleci.com/docs/configuration-reference/#steps
@@ -29,11 +29,11 @@ jobs:
       - aws-cloudformation/deploy:
           stack-name: "lecture-13"
           template-file-path: "cloudformation/lect10-vpc.yml"
-  say-hell:
-    steps:
-      - run:
-          name: "Say hell"
-          command: "echo Hell, World!"
+ #say-hell:
+    #steps:
+      #- run:
+          #name: "Say hell"
+          #command: "echo Hell, World!"
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
@@ -42,4 +42,4 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - execute-cfn
-      - say-hell
+      #- say-hell
