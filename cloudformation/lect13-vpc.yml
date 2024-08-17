@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: Template of VPC(incl. IGW and Subnets) and Security Groups for Lecture10
+Description: Template of VPC(incl. IGW and Subnets) and Security Groups for Lecture13
 
 #-----------------------------------------------------------------------------------------------
 Parameters:
@@ -12,10 +12,10 @@ Parameters:
     Type: String
     Default: lecture13
 
-  MyIPAddress:
-    Description: CIDR for "My IP Address"
-    Type: String
-    Default: 118.104.6.180/32
+#  MyIPAddress:
+#    Description: CIDR for "My IP Address"
+#    Type: String
+#    Default: XXX.XXX.XXX.XXX/32
 
   AvailabilityZone1:
     Description: Availability Zone 1
@@ -59,7 +59,7 @@ Resources:
 #-----------------------------------------------------------------------------------------------
 
 #----VPC & IGW----
-  Lecture10VPC:
+  Lecture13VPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Sub ${CIDRBlockVPC}
@@ -67,90 +67,90 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName}-vpc
 
-  Lecture10InternetGateway:
+  Lecture13InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-igw
 
-  Lecture10VPCGatewayAttachment:
+  Lecture13VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !Ref Lecture10VPC
-      InternetGatewayId: !Ref Lecture10InternetGateway
+      VpcId: !Ref Lecture13VPC
+      InternetGatewayId: !Ref Lecture13InternetGateway
 
 #----Route Tables----
-  Lecture10RouteTablePublic:
+  Lecture13RouteTablePublic:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-public-rtb
 
-  Lecture10Route:
+  Lecture13Route:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref Lecture10RouteTablePublic
-      GatewayId: !Ref Lecture10InternetGateway
+      RouteTableId: !Ref Lecture13RouteTablePublic
+      GatewayId: !Ref Lecture13InternetGateway
       DestinationCidrBlock: 0.0.0.0/0
 
 #----Subnets----
-  Lecture10SubnetPublic1:
+  Lecture13SubnetPublic1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
       CidrBlock: !Sub ${CIDRBlockSubnetPublic1}
       AvailabilityZone: !Sub ${AvailabilityZone1}
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-pbl1-sbn
 
-  Lecture10SubnetPublic2:
+  Lecture13SubnetPublic2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
       CidrBlock: !Sub ${CIDRBlockSubnetPublic2}
       AvailabilityZone: !Sub ${AvailabilityZone2}
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-pbl2-sbn
 
-  Lecture10SubnetPrivate1:
+  Lecture13SubnetPrivate1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
       CidrBlock: !Sub ${CIDRBlockSubnetPrivate1}
       AvailabilityZone: !Sub ${AvailabilityZone1}
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-prv1-sbn
 
-  Lecture10SubnetPrivate2:
+  Lecture13SubnetPrivate2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
       CidrBlock: !Sub ${CIDRBlockSubnetPrivate2}
       AvailabilityZone: !Sub ${AvailabilityZone2}
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-prv2-sbn
 
-  Lecture10SubnetRouteTableAssociationPublic1:
+  Lecture13SubnetRouteTableAssociationPublic1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref Lecture10SubnetPublic1
-      RouteTableId: !Ref Lecture10RouteTablePublic
+      SubnetId: !Ref Lecture13SubnetPublic1
+      RouteTableId: !Ref Lecture13RouteTablePublic
 
-  Lecture10SubnetRouteTableAssociationPublic2:
+  Lecture13SubnetRouteTableAssociationPublic2:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref Lecture10SubnetPublic2
-      RouteTableId: !Ref Lecture10RouteTablePublic
+      SubnetId: !Ref Lecture13SubnetPublic2
+      RouteTableId: !Ref Lecture13RouteTablePublic
 
 #----Security Groups----
-  Lecture10SecurityGroupEC2:
+  Lecture13SecurityGroupEC2:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enabler for access only by SSH and HTTP
@@ -159,21 +159,18 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: !Ref MyIPAddress
+          CidrIp: '{{resolve:ssm:/lecture13/my-ip}}' #!Ref MyIPAddress
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: !Ref MyIPAddress
-        - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
-          CidrIp: !Ref MyIPAddress
+          SourceSecurityGroupId: !Ref Lecture13SecurityGroupALB
+          #CidrIp: !Ref MyIPAddress
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-ec2-sg
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
 
-  Lecture10SecurityGroupRDS:
+  Lecture13SecurityGroupRDS:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enabler for access only by MYSQL/Aurora
@@ -182,13 +179,13 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: !Ref Lecture10SecurityGroupEC2
+          SourceSecurityGroupId: !Ref Lecture13SecurityGroupEC2
       Tags:
-        - key: Name
+        - Key: Name
           Value: !Sub ${EnvironmentName}-rds-sg
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
 
-  Lecture10SecurityGroupALB:
+  Lecture13SecurityGroupALB:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enabler for access only by HTTP
@@ -197,73 +194,73 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIP: !Ref MyIPAddress
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-alb-sg
-      VpcId: !Ref Lecture10VPC
+      VpcId: !Ref Lecture13VPC
 
 #-----------------------------------------------------------------------------------------------
 Outputs:
 # Naming Rule of Export Name : EnvironmentName(defined in parameters) + Resource Type (+ other identifiers)
 # Without abbreviations such as rt(route table), except for AWS's service name such as VPC
 #-----------------------------------------------------------------------------------------------
-  OutputLecture10AvailabilityZone1:
+  OutputLecture13AvailabilityZone1:
     Description: Availability Zone 1
-    Value: !GetAtt Lecture10SubnetPublic1.AvailabilityZone
+    Value: !GetAtt Lecture13SubnetPublic1.AvailabilityZone
     Export:
       Name: !Sub ${EnvironmentName}-availability-zone1
 
-  OutputLecture10AvailabilityZone2:
+  OutputLecture13AvailabilityZone2:
     Description: Availability Zone 2
-    Value: !GetAtt Lecture10SubnetPublic2.AvailabilityZone
+    Value: !GetAtt Lecture13SubnetPublic2.AvailabilityZone
     Export:
       Name: !Sub ${EnvironmentName}-availability-zone2
 
-  OutputLecture10VPC:
+  OutputLecture13VPC:
     Description: VPC output
-    Value: !Ref Lecture10VPC
+    Value: !Ref Lecture13VPC
     Export:
       Name: !Sub ${EnvironmentName}-vpc
 
-  OutputLecture10PublicSubnet1:
+  OutputLecture13PublicSubnet1:
     Description: Public Subnet 1 output
-    Value: !Ref Lecture10SubnetPublic1
+    Value: !Ref Lecture13SubnetPublic1
     Export:
       Name: !Sub ${EnvironmentName}-subnet-public1
 
-  OutputLecture10PublicSubnet2:
+  OutputLecture13PublicSubnet2:
     Description: Public Subnet 2 output
-    Value: !Ref Lecture10SubnetPublic2
+    Value: !Ref Lecture13SubnetPublic2
     Export:
       Name: !Sub ${EnvironmentName}-subnet-public2
 
-  OutputLecture10PrivateSubnet1:
+  OutputLecture13PrivateSubnet1:
     Description: Private Subnet 1 output
-    Value: !Ref Lecture10SubnetPrivate1
+    Value: !Ref Lecture13SubnetPrivate1
     Export:
       Name: !Sub ${EnvironmentName}-subnet-private1
 
-  OutputLecture10PrivateSubnet2:
+  OutputLecture13PrivateSubnet2:
     Description: Private Subnet 2 output
-    Value: !Ref Lecture10SubnetPrivate2
+    Value: !Ref Lecture13SubnetPrivate2
     Export:
       Name: !Sub ${EnvironmentName}-subnet-private2
 
-  OutputLecture10SecurityGroupEC2:
+  OutputLecture13SecurityGroupEC2:
     Description: Security Group Output for EC2
-    Value: !Ref Lecture10SecurityGroupEC2
+    Value: !Ref Lecture13SecurityGroupEC2
     Export:
       Name: !Sub ${EnvironmentName}-security-group-ec2
 
-  OutputLecture10SecurityGroupRDS:
+  OutputLecture13SecurityGroupRDS:
     Description: Security Group Output for RDS
-    Value: !Ref Lecture10SecurityGroupRDS
+    Value: !Ref Lecture13SecurityGroupRDS
     Export:
       Name: !Sub ${EnvironmentName}-security-group-rds
 
-  OutputLecture10SecurityGroupALB:
+  OutputLecture13SecurityGroupALB:
     Description: Security Group Output for ALB
-    Value: !Ref Lecture10SecurityGroupALB
+    Value: !Ref Lecture13SecurityGroupALB
     Export:
       Name: !Sub ${EnvironmentName}-security-group-alb

@@ -1,46 +1,52 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
 orbs:
+  python: circleci/python@2.0.3
   aws-cli: circleci/aws-cli@4.1.3
   aws-cloudformation: orbss/aws-cloudformation@0.1.6
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hell:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/executor-intro/ & https://circleci.com/docs/configuration-reference/#executor-job
-    docker:
-      # Specify the version you desire here
-      # See: https://circleci.com/developer/images/image/cimg/base
-      - image: cimg/base:current
+  cfn-lint:
+    executor: python/default
     steps:
+      - checkout
+      - run: pip install cfn-lint
       - run:
-          name: "Say hell"
-          command: "echo Hell, World!"
+          name: run cfn-lint
+          command: |
+            cfn-lint -i W3002 -t cloudformation/*.yml
 
   execute-cfn:
     executor: aws-cloudformation/default
-    # Add steps to the job
-    # See: https://circleci.com/docs/jobs-steps/#steps-overview & https://circleci.com/docs/configuration-reference/#steps
     steps:
-      # Checkout the code as the first step.
       - checkout
       - aws-cli/setup:
           aws_access_key_id: AWS_ACCESS_KEY_ID
           aws_secret_access_key: AWS_SECRET_ACCESS_KEY
           region: AWS_DEFAULT_REGION
       - aws-cloudformation/deploy:
-          stack-name: "lecture-13"
-          template-file-path: "cloudformation/lect10-vpc.yml"
+          stack-name: "lecture13"
+          template-file-path: "cloudformation/lect13-vpc.yml"
+      - aws-cloudformation/deploy:
+          stack-name: "lecture13"
+          template-file-path: "cloudformation/lect13-ec2.yml"
+      - aws-cloudformation/deploy:
+          stack-name: "lecture13"
+          template-file-path: "cloudformation/lect13-s3.yml"
+      - aws-cloudformation/deploy:
+          stack-name: "lecture13"
+          template-file-path: "cloudformation/lect13-rds.yml"
+      - aws-cloudformation/deploy:
+          stack-name: "lecture13"
+          template-file-path: "cloudformation/lect13-alb.yml"
+      - aws-cloudformation/deploy:
+          stack-name: "lecture13"
+          template-file-path: "cloudformation/lect13-cw.yml"
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hell-workflow: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  say-hell-workflow:
     jobs:
-      - say-hell
-      - execute-cfn
+      - cfn-lint
+      #- execute-cfn:
+      #    requires:
+      #      - execute-cfn
