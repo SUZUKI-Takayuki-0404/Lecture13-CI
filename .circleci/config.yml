@@ -30,7 +30,7 @@ jobs:
       - aws-cloudformation/deploy:
           stack-name: "lecture13"
           template-file-path: "cloudformation/lect13-ec2.yml"
-          capabilities: CAPABILITY_IAM
+          capabilities: CAPABILITY_NAMED_IAM
       - aws-cloudformation/deploy:
           stack-name: "lecture13"
           template-file-path: "cloudformation/lect13-s3.yml"
