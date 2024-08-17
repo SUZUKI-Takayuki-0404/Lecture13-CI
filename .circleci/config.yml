@@ -25,23 +25,23 @@ jobs:
           aws_secret_access_key: AWS_SECRET_ACCESS_KEY
           region: AWS_DEFAULT_REGION
       - aws-cloudformation/deploy:
-          stack-name: "lecture13"
+          stack-name: "lecture13-vpc"
           template-file-path: "cloudformation/lect13-vpc.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13"
+          stack-name: "lecture13-ec2"
           template-file-path: "cloudformation/lect13-ec2.yml"
           capabilities: CAPABILITY_NAMED_IAM
       - aws-cloudformation/deploy:
-          stack-name: "lecture13"
+          stack-name: "lecture13-s3"
           template-file-path: "cloudformation/lect13-s3.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13"
+          stack-name: "lecture13-rds"
           template-file-path: "cloudformation/lect13-rds.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13"
+          stack-name: "lecture13-alb"
           template-file-path: "cloudformation/lect13-alb.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13"
+          stack-name: "lecture13-cw"
           template-file-path: "cloudformation/lect13-cw.yml"
 
 workflows:
