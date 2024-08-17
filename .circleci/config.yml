@@ -49,4 +49,4 @@ workflows:
       - cfn-lint
       - execute-cfn:
           requires:
-            - execute-cfn
+            - cfn-lint
