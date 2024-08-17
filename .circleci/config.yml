@@ -44,9 +44,9 @@ jobs:
           template-file-path: "cloudformation/lect13-cw.yml"
 
 workflows:
-  say-hell-workflow:
+  lecture13-workflow:
     jobs:
       - cfn-lint
-      #- execute-cfn:
-      #    requires:
-      #      - execute-cfn
+      - execute-cfn:
+          requires:
+            - execute-cfn
