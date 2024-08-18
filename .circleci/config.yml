@@ -58,12 +58,12 @@ jobs:
           name: set environment variables
           command: |
             echo export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env-vars.sh
+            echo EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:'aws:cloudformation:stack-name',Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text)
             echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env-vars.sh
             echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env-vars.sh
             echo export RDSPass$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env-vars.sh
             echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env-vars.sh
             echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env-vars.sh
-            cat env-vars.sh
       - persist_to_workspace:  #Share variables among jobs
           root: .
           paths:
