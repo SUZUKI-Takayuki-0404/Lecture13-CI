@@ -43,6 +43,73 @@ jobs:
       - aws-cloudformation/deploy:
           stack-name: "lecture13-cw"
           template-file-path: "cloudformation/lect13-cw.yml"
+          capabilities: CAPABILITY_NAMED_IAM
+
+      - run:  # Get values of EC2 Public IP, RDS Username, RDS Password, RDS Endpoint and ALB DNS Host, using AWS CLI
+          name: set environment variables
+          command: |
+            echo aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text
+            echo aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text
+            echo aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text
+            echo aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text
+            echo aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text
+            echo aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text
+
+            #--------
+            set -x
+            #----EC2 Public IP----
+            echo aws cloudformation describe-stacks --stack-name lecture13-ec2 --query "Stacks[0].Outputs[?OutputKey=='EC2PublicIpAddress'].OutputValue" --output text
+            echo aws cloudformation describe-stacks --stack-name lecture13-ec2 --query 'Stacks[].Outputs[?OutputKey==`EC2publicIP`].OutputValue' --output text
+            #----RDS Endpoint----
+            echo aws cloudformation describe-stacks --stack-name lecture13-rds "Stacks[0].Outputs[?OutputKey=='RDSEndpoint'].OutputValue" --output text
+            echo aws cloudformation describe-stacks --stack-name lecture13-rds --query 'Stacks[].Outputs[?OutputKey==`DBuser`].OutputValue
+            echo aws cloudformation describe-stacks --stack-name lecture13-rds --query 'Stacks[].Outputs[?OutputKey==`DBpassword`].OutputValue
+            echo aws cloudformation describe-stacks --stack-name lecture13-rds --query 'Stacks[].Outputs[?OutputKey==`DBhost`].OutputValue
+            #----ALB Host----
+            echo aws cloudformation describe-stacks --stack-name lecture13-alb --query "Stacks[0].Outputs[?OutputKey=='ALBDNSName'].OutputValue" --output text
+            echo aws cloudformation describe-stacks --stack-name lecture13-alb --query 'Stacks[].Outputs[?OutputKey==`ALBendpoint`].OutputValue' --output text
+            #----S3----
+            echo aws cloudformation describe-stacks --stack-name lecture13-s3 --query "Stacks[0].Outputs[?OutputKey=='S3BuckeName'].OutputValue" --output text
+            echo aws cloudformation describe-stacks --stack-name lecture13-s3 --query 'Stacks[].Outputs[?OutputKey==`S3bucketName`].OutputValue' --output text
+
+            #echo export X=$(X) >> $BASH_ENV
+            #source "$BASH_ENV"
+
+            #echo export =$() >> env_vars.sh
+            #cat env_vars.sh
+
+            # jqコマンド: JSON(JavaScript Object Notation)データを操作・抽出・変換
+            #.sh形式にしている理由=====
+            # sourceコマンドの利用:
+            # source env_vars.shコマンドを使用すると、そのスクリプト内のコマンドが現在のシェルで実行されます。この方法により、スクリプト内で設定された環境変数は現在のシェル環境に適用されます。
+            # source（または.）はスクリプトをサブシェルで実行するのではなく、現在のシェルで実行するため、スクリプト内の環境変数設定が有効になります。
+            # シバンの必要性がない:
+            # シェルスクリプトを直接実行する場合は、#!/bin/bashのようなシバンが必要ですが、sourceで読み込むスクリプトには必要ありません。
+            # .shファイルとして保存する理由
+            # わかりやすさ:
+            # .sh拡張子を持つファイルは、シェルスクリプトであることが明確です。これにより、ファイルの内容と目的が一目でわかります。
+            # 一貫性:
+            # 環境変数の設定をスクリプトファイルとして保存することで、他のスクリプトやジョブから再利用が容易になります。
+            #=====
+#-------------------------------------------------------------------------------------
+#      - run:
+#          name: cat $BASH_ENV
+#          command: |
+#            cat $BASH_ENV
+#            cp $BASH_ENV env_var.sh
+#      - persist_to_workspace:
+#          root: .
+#          paths:
+#            - env_var.sh
+#
+#      - run:
+#          command:
+#            cp $BASH_ENV bash.env
+#      - persist_to_workspace:
+#          root: .
+#          paths:
+#            - bash.env
+#-------------------------------------------------------------------------------------
 
 workflows:
   lecture13-workflow:

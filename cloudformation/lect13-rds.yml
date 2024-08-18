@@ -56,7 +56,7 @@ Resources:
       BackupRetentionPeriod: 0
       CopyTagsToSnapshot: false
       DBInstanceClass: db.t3.micro
-      DBInstanceIdentifier: !Sub ${EnvironmentName}-rdb
+      DBInstanceIdentifier: !Sub ${EnvironmentName}-rds
       DBName: !Sub ${EnvironmentName}rdb #Must begin with a letter and contain only alphanumeric characters
       DBSubnetGroupName: !Ref Lecture13DBSubnetGroup
       Engine: mysql
