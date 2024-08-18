@@ -71,7 +71,6 @@ jobs:
       - run:
           name: set environment variables
           command: |
-            PWD
             cat env-vars.sh
             ls -a
 
