@@ -45,6 +45,7 @@ jobs:
           template-file-path: "cloudformation/lect13-cw.yml"
           capabilities: CAPABILITY_NAMED_IAM
 
+#----Get-value-from-cfn----
   get-value-from-cfn:
     executor: aws-cli/default
     steps:
@@ -56,35 +57,17 @@ jobs:
       - run:  # Get values of EC2 Public IP, RDS Username, RDS Password, RDS Endpoint and ALB DNS Host, using AWS CLI
           name: set environment variables
           command: |
-            echo $(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text)
-            echo $(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text)
-            echo $(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text)
-            echo $(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text)
-            echo $(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text)
-
-            #--------
-            set -x
-            #----EC2 Public IP----
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-ec2 --query "Stacks[0].Outputs[?OutputKey=='EC2PublicIpAddress'].OutputValue" --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-ec2 --query 'Stacks[].Outputs[?OutputKey==`EC2publicIP`].OutputValue' --output text)
-            #----RDS Endpoint----
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-rds "Stacks[0].Outputs[?OutputKey=='RDSEndpoint'].OutputValue" --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-rds --query 'Stacks[].Outputs[?OutputKey==`DBuser`].OutputValue' --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-rds --query 'Stacks[].Outputs[?OutputKey==`DBpassword`].OutputValue' --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-rds --query 'Stacks[].Outputs[?OutputKey==`DBhost`].OutputValue' --output text)
-            #----ALB Host----
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-alb --query "Stacks[0].Outputs[?OutputKey=='ALBDNSName'].OutputValue" --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-alb --query 'Stacks[].Outputs[?OutputKey==`ALBendpoint`].OutputValue' --output text)
-            #----S3----
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-s3 --query "Stacks[0].Outputs[?OutputKey=='S3BuckeName'].OutputValue" --output text)
-            echo $(aws cloudformation describe-stacks --stack-name lecture13-s3 --query 'Stacks[].Outputs[?OutputKey==`S3bucketName`].OutputValue' --output text)
-
-            #echo export X=$(X) >> $BASH_ENV
-            #source "$BASH_ENV"
-
-            #echo export =$() >> env_vars.sh
-            #cat env_vars.sh
+            export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env-vars.sh
+            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env-vars.sh
+            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env-vars.sh
+            echo export RDSPass$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env-vars.sh
+            echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env-vars.sh
+            echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env-vars.sh
+            cat env-vars.sh
+      - persist_to_workspace:  #Share variables among jobs
+          root: .
+          paths:
+            - bash.env
 
             # jqコマンド: JSON(JavaScript Object Notation)データを操作・抽出・変換
             #.sh形式にしている理由=====
@@ -99,16 +82,7 @@ jobs:
             # 一貫性:
             # 環境変数の設定をスクリプトファイルとして保存することで、他のスクリプトやジョブから再利用が容易になります。
             #=====
-#-------------------------------------------------------------------------------------
-#      - run:
-#          name: cat $BASH_ENV
-#          command: |
-#            cat $BASH_ENV
-#            cp $BASH_ENV bash.env
-#      - persist_to_workspace:
-#          root: .
-#          paths:
-#            - bash.env
+
 #-------------------------------------------------------------------------------------
 
 workflows:
