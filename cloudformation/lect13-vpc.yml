@@ -12,10 +12,11 @@ Parameters:
     Type: String
     Default: lecture13
 
-#  MyIPAddress:
-#    Description: CIDR for "My IP Address"
-#    Type: String
-#    Default: XXX.XXX.XXX.XXX/32
+  #MyIPAddress:
+    #Description: CIDR for "My IP Address"
+    #Type: String
+    #Default: XXX.XXX.XXX.XXX/32
+  #Instead of a parameter, SYSTEMS Management, NOT "SECRETS" Management, is selected because of cost efficiency
 
   AvailabilityZone1:
     Description: Availability Zone 1

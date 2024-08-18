@@ -16,6 +16,7 @@ Parameters:
     #Description: Email address for Simple Notification Service
     #Type: String
     #Default:  xxxx@yyyy.zz
+  #Instead of a parameter, SYSTEMS Management, NOT "SECRETS" Management, is selected because of cost efficiency
 
 #-----------------------------------------------------------------------------------------------
 Resources:
