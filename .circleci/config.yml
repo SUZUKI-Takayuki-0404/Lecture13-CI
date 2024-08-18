@@ -69,10 +69,8 @@ jobs:
           paths:
             - env-vars.sh
       - run:
-          name: set environment variables
-          command: |
-            cat env-vars.sh
-            ls -a
+          name: check environment variables
+          command: cat env-vars.sh
 
             # jqコマンド: JSON(JavaScript Object Notation)データを操作・抽出・変換
             #.sh形式にしている理由=====
