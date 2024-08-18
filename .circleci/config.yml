@@ -55,36 +55,20 @@ jobs:
           aws_secret_access_key: AWS_SECRET_ACCESS_KEY
           region: AWS_DEFAULT_REGION
       - run:  # Get values of EC2 Public IP, RDS Username, RDS Password, RDS Endpoint and ALB DNS Host, using AWS CLI
-          name: set environment variables
+          name: set environment variables in env-vars.sh
           command: |
-            echo export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env-vars.sh
-            echo EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:'aws:cloudformation:stack-name',Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text)
-            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env-vars.sh
-            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env-vars.sh
-            echo export RDSPass$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env-vars.sh
-            echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env-vars.sh
-            echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env-vars.sh
+            echo '#!/bin/bash' >> env_vars.sh
+            echo export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
+            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env_vars.sh
+            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
+            echo export RDSPass$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
+            echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env_vars.sh
+            echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env_vars.sh
+            cat env_vars.sh
       - persist_to_workspace:  #Share variables among jobs
           root: .
           paths:
-            - env-vars.sh
-      - run:
-          name: check environment variables
-          command: cat env-vars.sh
-
-            # jqコマンド: JSON(JavaScript Object Notation)データを操作・抽出・変換
-            #.sh形式にしている理由=====
-            # sourceコマンドの利用:
-            # source env_vars.shコマンドを使用すると、そのスクリプト内のコマンドが現在のシェルで実行されます。この方法により、スクリプト内で設定された環境変数は現在のシェル環境に適用されます。
-            # source（または.）はスクリプトをサブシェルで実行するのではなく、現在のシェルで実行するため、スクリプト内の環境変数設定が有効になります。
-            # シバンの必要性がない:
-            # シェルスクリプトを直接実行する場合は、#!/bin/bashのようなシバンが必要ですが、sourceで読み込むスクリプトには必要ありません。
-            # .shファイルとして保存する理由
-            # わかりやすさ:
-            # .sh拡張子を持つファイルは、シェルスクリプトであることが明確です。これにより、ファイルの内容と目的が一目でわかります。
-            # 一貫性:
-            # 環境変数の設定をスクリプトファイルとして保存することで、他のスクリプトやジョブから再利用が容易になります。
-            #=====
+            - env_vars.sh
 
 #-------------------------------------------------------------------------------------
 
