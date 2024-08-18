@@ -63,11 +63,17 @@ jobs:
             echo export RDSPass$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env-vars.sh
             echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env-vars.sh
             echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env-vars.sh
-            echo cat env-vars.sh
+            cat env-vars.sh
       - persist_to_workspace:  #Share variables among jobs
           root: .
           paths:
             - env-vars.sh
+      - run:
+          name: set environment variables
+          command: |
+            PWD
+            cat env-vars.sh
+            ls -a
 
             # jqコマンド: JSON(JavaScript Object Notation)データを操作・抽出・変換
             #.sh形式にしている理由=====
