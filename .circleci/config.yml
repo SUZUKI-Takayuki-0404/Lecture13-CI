@@ -67,9 +67,9 @@ jobs:
             echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> $BASH_ENV #env_vars.sh
             echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> $BASH_ENV #env_vars.sh
             cat $BASH_ENV #env_vars.sh
-            source $BASH_ENV
 
-           #echo '#!/bin/bash' >> env_vars.sh
+            #source $BASH_ENV
+            #echo '#!/bin/bash' >> env_vars.sh
 #      - persist_to_workspace:  #Share variables among jobs
 #          root: .
 #          paths:
@@ -84,7 +84,9 @@ jobs:
 #          at: .
       - run:
           name: check env_var.sh
-          command: cat $BASH_ENV
+          command: |
+            source $BASH_ENV
+            cat $BASH_ENV
 #            source env_vars.sh
 #            echo env_vars.sh >> $BASH_ENV
 
