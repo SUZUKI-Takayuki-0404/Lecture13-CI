@@ -100,10 +100,13 @@ jobs:
             - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ansible-playbook/install:
           version: 2.9.23
-      - ansible-playbook/playbook:
-          playbook: ansible/site.yml
-          playbook-options: -i webserver, --private-key ~/.ssh/id_rsa #${EC2PublicIP}
-          #inventory-parameters: ansible/inventories/host.yml
+      #- ansible-playbook/playbook:
+      #    playbook: ansible/site.yml
+      #    playbook-options: -i ${EC2PublicIP}, --private-key ~/.ssh/id_rsa
+      #    inventory-parameters: ansible/inventories/host.yml
+      - run:
+          name: run ansible-playbook
+          command: ansible-playbook ansible/site.yml
 
 #----Serverspec----
 workflows:
