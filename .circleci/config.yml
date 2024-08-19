@@ -93,6 +93,13 @@ jobs:
             cat ansible/site.yml
             cat ansible/inventories/host.yml
             cat ansible/ansible.cfg
+            ${EC2PublicIP}
+            ${RDSEndPoint}
+            ${RDSUser}
+            ${RDSPass}
+            ${S3Name}
+            ${ALBDNSName}
+            KEY_FINGERPRINT
 #ここで環境変数に追加できる?
 # source env_vars.sh #runコマンドごとにパスを通さないといけない
 # sed -i "s/EC2PublicIP/${EC2PublicIP}/g" ansible/inventory/target.yml
