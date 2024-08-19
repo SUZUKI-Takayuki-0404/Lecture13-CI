@@ -85,12 +85,14 @@ jobs:
           name: check env_var.sh
           command: |
             cat env_vars.sh >> $BASH_ENV
-            #source env_vars.sh
+            source $BASH_ENV
       - run:
           name: check BAH_ENV
           command: |
             cat $BASH_ENV
-
+            cat ansible/site.yml
+            cat ansible/inventories/host.yml
+            cat ansible/ansible.cfg
 #ここで環境変数に追加できる?
 # source env_vars.sh #runコマンドごとにパスを通さないといけない
 # sed -i "s/EC2PublicIP/${EC2PublicIP}/g" ansible/inventory/target.yml
@@ -107,7 +109,7 @@ jobs:
 # /g: グローバルオプション。行全体で一致するすべてのインスタンスを置き換える。
       - add_ssh_keys:
           fingerprints:
-            - SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI #${KEY_FINGERPRINT}
+            - KEY_FINGERPRINT #SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI #${KEY_FINGERPRINT}
       - ansible-playbook/install:
           version: 2.9.23
       - ansible-playbook/playbook:
