@@ -85,7 +85,7 @@ jobs:
           name: check env_var.sh
           command: |
             source env_vars.sh #runコマンドごとにパスを通さないといけない
-            sed -i "s/ec2_publicip/${EC2PublicIP}/g" ansible/inventory/host.yml
+            sed -i "s/ec2_publicip/${EC2PublicIP}/g" ansible/inventories/host.yml
             sed -i "s/rds_endpoint/${RDSEndPoint}/g" ansible/site.yml
             sed -i "s/rds_user/${RDSUser}/g" ansible/site.yml
             sed -i "s/rds_pass/${RDSPass}/g" ansible/site.yml
