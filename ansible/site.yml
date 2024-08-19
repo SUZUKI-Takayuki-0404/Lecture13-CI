@@ -1,4 +1,3 @@
----
 - name: playroles
   hosts: webserver
   become: yes
