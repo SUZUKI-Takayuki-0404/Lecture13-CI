@@ -58,7 +58,7 @@ jobs:
           aws_secret_access_key: AWS_SECRET_ACCESS_KEY
           region: AWS_DEFAULT_REGION
       - run:  # Get values of EC2 Public IP, RDS Username, RDS Password, RDS Endpoint and ALB DNS Host, using AWS CLI
-          name: set environment variables in env-vars.sh
+          name: set environment variables
           command: |
 #           echo '#!/bin/bash' >> env_vars.sh
             echo export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> $BASH_ENV #env_vars.sh
