@@ -60,7 +60,6 @@ jobs:
       - run:  # Get values of EC2 Public IP, RDS Username, RDS Password, RDS Endpoint and ALB DNS Host, using AWS CLI
           name: set environment variables in env_vars.sh
           command: |
-            echo '#!/bin/bash' >> env_vars.sh
             echo export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
             echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env_vars.sh
             echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
@@ -68,7 +67,7 @@ jobs:
             echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env_vars.sh
             echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env_vars.sh
             cat env_vars.sh
-
+            #echo '#!/bin/bash' >> env_vars.sh
       # The "persist_to_workspace" step enables users to add files in a workspace, and the "attach_workspace" step does to download contents from it within a job
       - persist_to_workspace:
           root: .
@@ -87,6 +86,7 @@ jobs:
           command: |
             source env_vars.sh
             echo env_vars.sh >> $BASH_ENV
+            cat $BASH_ENV
 
 #ここで環境変数に追加できる?
 # source env_vars.sh #runコマンドごとにパスを通さないといけない
@@ -108,7 +108,7 @@ jobs:
       - ansible-playbook/install:
           version: 2.9.23
       - ansible-playbook/playbook:
-          playbook: ansible/playbook.yml
+          playbook: ansible/site.yml
           #playbook-options: -i ${AWS_EC2_IP}, --private-key ~/.ssh/ansible-test-key
 
 
