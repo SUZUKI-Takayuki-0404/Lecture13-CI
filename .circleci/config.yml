@@ -70,18 +70,20 @@ jobs:
 
             #source $BASH_ENV
             #echo '#!/bin/bash' >> env_vars.sh
-#      - persist_to_workspace:  #Share variables among jobs
-#          root: .
-#          paths:
-#            - env_vars.sh
+      # The "persist_to_workspace" step enables users to add files in a workspace, and the "attach_workspace" step does to download contents from it within a job
+      - persist_to_workspace:  #Share variables among jobs
+          root: .
+          paths:
+            - $BASH_ENV
+            #- env_vars.sh
 
 #----Ansible----
   execute-ansible:
     executor: ansible-playbook/default
     steps:
       - checkout
-#      - attach_workspace:
-#          at: .
+      - attach_workspace:
+          at: .
       - run:
           name: check env_var.sh
           command: |
