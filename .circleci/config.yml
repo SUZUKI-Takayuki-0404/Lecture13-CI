@@ -97,7 +97,7 @@ jobs:
             cat ansible/site.yml
       - add_ssh_keys:
           fingerprints:
-            - SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI
+            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ansible-playbook/install:
           version: 2.9.23
       - ansible-playbook/playbook:

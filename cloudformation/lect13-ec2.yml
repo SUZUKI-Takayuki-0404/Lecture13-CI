@@ -15,7 +15,7 @@ Parameters:
   KeyNameEC2:
     Description: Key Pair associated when launching EC2
     Type: AWS::EC2::KeyPair::KeyName
-    Default: Raisetech-AWS-Kadai-pem
+    Default: Lecture13-pem
 
 #-----------------------------------------------------------------------------------------------
 Resources:
