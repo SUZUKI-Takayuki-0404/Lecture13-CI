@@ -1,0 +1,208 @@
+---
+#anyenv
+- name: Recognize anyenv
+  ansible.builtin.shell: 'anyenv -v'
+  register: recognize_anyenv
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output Recognize anyenv
+  ansible.builtin.debug:
+    msg: "{{ recognize_anyenv }}"
+  changed_when: no
+  ignore_errors: yes
+  when: recognize_anyenv is failed
+
+- name: Install packages on which ruby depends
+  become_user: root
+  yum:
+    name: 
+      - gcc-c++
+      - glibc-headers
+      - openssl-devel
+      - libyaml-devel
+      - readline
+      - readline-devel
+      - zlib
+      - zlib-devel
+      - libffi-devel
+      - libxml2
+      - libxslt
+      - libxml2-devel
+      - libxslt-devel
+      - sqlite-devel
+    state: present
+
+- name: Clone anyenv
+  ansible.builtin.git:
+    repo: https://github.com/anyenv/anyenv
+    dest: /home/ec2-user/.anyenv
+  when: recognize_anyenv is failed
+
+- name: Add anyenv to bash_profile and bashrc PATH
+  lineinfile:
+    path: "{{ item.path }}"
+    line: "{{ item.line }}"
+  loop:
+    - path: /home/ec2-user/.bash_profile
+      line: 'export PATH="$HOME/.anyenv/bin:$PATH"'
+    - path: /home/ec2-user/.bashrc
+      line: 'export PATH="$HOME/.anyenv/bin:$PATH"'  
+  when: recognize_anyenv is failed
+
+- name: Load bash_profile and bashrc
+  ansible.builtin.shell: "{{ item.anyenv }}" 
+  changed_when: no
+  loop:
+    - anyenv: source /home/ec2-user/.bash_profile
+    - anyenv: source /home/ec2-user/.bashrc
+  when: recognize_anyenv is failed
+
+- name: Add line to bash_profile to load anyenv automatically
+  lineinfile: 
+    path: /home/ec2-user/.bash_profile
+    line: 'eval "$(anyenv init -)"'
+  when: recognize_anyenv is failed
+
+- name: Reload bash_profile
+  ansible.builtin.shell: source /home/ec2-user/.bash_profile
+  changed_when: no
+  when: recognize_anyenv is failed
+
+- name: Init anyenv
+  ansible.builtin.shell: '/usr/bin/yes | /home/ec2-user/.anyenv/bin/anyenv install --init'
+  when: recognize_anyenv is failed
+  register: result_init_anyenv
+  ignore_errors: yes  
+
+- name: Output Init anyenv
+  ansible.builtin.debug:
+    msg: "{{ result_init_anyenv }}"
+  changed_when: no
+  ignore_errors: yes
+  when: result_init_anyenv is failed
+
+- name: Anyenv install rbenv and nodenv
+  ansible.builtin.shell: "{{ item.anyenv }}"
+  timeout: 60
+  loop:
+    - anyenv: '/home/ec2-user/.anyenv/bin/anyenv install rbenv'
+    - anyenv: '/home/ec2-user/.anyenv/bin/anyenv install nodenv'
+  register: result_anyenv_install_rbenv_nodenv
+  when: recognize_anyenv is failed
+  ignore_errors: yes
+
+- name: Output Anyenv install rbenv and nodenv
+  ansible.builtin.debug:
+    msg: "{{ result_anyenv_install_rbenv_nodenv }}"
+  changed_when: no
+  ignore_errors: yes
+  when: result_anyenv_install_rbenv_nodenv is failed
+ 
+- name: Recognize rbenv and nodenv
+  ansible.builtin.shell: |
+    rbenv -v
+    nodenv -v
+  register: recognize_rbenv_nodenv
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output Recognize rbenv and nodenv
+  ansible.builtin.debug:
+    msg: "{{ recognize_rbenv_nodenv }}"
+  changed_when: no
+  ignore_errors: yes
+  when: recognize_rbenv_nodenv is failed
+
+- name: Add rbenv and nodenv to .bash_profile and .bashrc PATH
+  lineinfile:
+    path: "{{ item.path }}"
+    line: "{{ item.line }}"
+    create: yes
+  loop:
+    - path: /home/ec2-user/.bash_profile
+      line: 'export PATH="$HOME/.anyenv/envs/rbenv/bin:$PATH"'
+    - path: /home/ec2-user/.bash_profile
+      line: 'export PATH="$HOME/.anyenv/envs/nodenv/bin:$PATH"'
+    - path: /home/ec2-user/.bashrc
+      line: 'export PATH="$HOME/.anyenv/envs/rbenv/bin:$PATH"'
+    - path: /home/ec2-user/.bashrc
+      line: 'export PATH="$HOME/.anyenv/envs/nodenv/bin:$PATH"'
+  when: recognize_rbenv_nodenv is failed
+
+- name: Load bash_profile and bashrc
+  ansible.builtin.shell: "{{ item.anyenv }}"
+  changed_when: no
+  loop:
+    - anyenv: source /home/ec2-user/.bash_profile
+    - anyenv: source /home/ec2-user/.bashrc
+  when: recognize_rbenv_nodenv is failed
+
+- name: Recognize ruby and node
+  ansible.builtin.shell: |
+    ruby -v
+    node -v
+  register: recognize_ruby_node
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output Recognize ruby and node
+  ansible.builtin.debug:
+    msg: "{{ recognize_ruby_node }}"
+  changed_when: no
+  ignore_errors: yes
+  when: recognize_ruby_node is failed
+
+- name: Install Ruby 3.2.3
+  ansible.builtin.shell: |
+    export PATH="$HOME/.anyenv/bin:$PATH"
+    eval "$(anyenv init -)"
+    rbenv install 3.2.3
+    rbenv global 3.2.3
+  timeout: 1200
+  when: recognize_ruby_node is failed
+
+- name: Install Node.js 17.9.1
+  ansible.builtin.shell: |
+    export PATH="$HOME/.anyenv/bin:$PATH"
+    eval "$(anyenv init -)"
+    nodenv install 17.9.1
+    nodenv global 17.9.1
+  timeout: 30
+  when: recognize_ruby_node is failed
+
+- name: Add ruby and node to .bash_profile and .bashrc PATH
+  lineinfile:
+    path: "{{ item.path }}"
+    line: "{{ item.line }}"
+    create: yes
+  loop:
+    - path: /home/ec2-user/.bash_profile
+      line: 'export PATH="$HOME/.anyenv/envs/rbenv/shims:$PATH"'
+    - path: /home/ec2-user/.bash_profile
+      line: 'export PATH="$HOME/.anyenv/envs/nodenv/shims:$PATH"'
+    - path: /home/ec2-user/.bashrc
+      line: 'export PATH="$HOME/.anyenv/envs/rbenv/shims:$PATH"'
+    - path: /home/ec2-user/.bashrc
+      line: 'export PATH="$HOME/.anyenv/envs/nodenv/shims:$PATH"'
+  when: recognize_ruby_node is failed
+
+- name: Load bash_profile and bashrc
+  ansible.builtin.shell: "{{ item.anyenv }}"
+  changed_when: no
+  loop:
+    - anyenv: source /home/ec2-user/.bash_profile
+    - anyenv: source /home/ec2-user/.bashrc
+  when: recognize_ruby_node is failed
+
+- name: Add line to bash_profile to load nodenv automatically
+  lineinfile:
+    path: /home/ec2-user/.bash_profile
+    line: 'eval "$(nodenv init - bash)"'
+  when: recognize_ruby_node is failed
+
+- name: Reload bash_profile
+  ansible.builtin.shell: source /home/ec2-user/.bash_profile
+  changed_when: no
+  when: recognize_ruby_node is failed
+

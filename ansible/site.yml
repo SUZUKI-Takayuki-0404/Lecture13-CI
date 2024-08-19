@@ -1,0 +1,26 @@
+---
+- name: playroles
+  hosts: webserver
+  become: yes
+  become_user: ec2-user
+  gather_facts: true
+  roles:
+    - yum
+    #- mysql
+    #- git
+    #- anyenv
+    #- bundler
+    #- rails
+    #- yarn
+    #- image_magick
+    #- sample_app
+    #- systemd
+    #- nginx
+    #- aws_storage
+
+  vars:
+   - aws_rds_user: ${RDSUser} #admin
+   - aws_rds_pass: ${RDSPass} #password
+   - aws_rds_host: ${RDSEndPoint} #lecture10-rdb.cpi2kykm2rye.ap-northeast-1.rds.amazonaws.com
+   - aws_alb_dns : ${ALBDNSName} #13.115.99.211
+   - aws_s3: ${S3Name} #lecture10-s3

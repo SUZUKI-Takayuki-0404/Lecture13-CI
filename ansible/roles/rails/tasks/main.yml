@@ -1,0 +1,12 @@
+---
+#rails
+- name: Recognize rails
+  ansible.builtin.shell: 'rails -v'
+  register: recognize_rails
+  changed_when: no
+  ignore_errors: yes
+
+- name: Install rails 7.1.3.2
+  ansible.builtin.shell: 'gem install rails -v 7.1.3.2 --no-document'
+  when: recognize_rails is failed
+

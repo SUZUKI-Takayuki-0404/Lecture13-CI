@@ -1,0 +1,26 @@
+---
+#mysql
+- name: Uninstall mariaDB
+  become_user: root
+  yum:
+    name: mariadb-*
+    state: absent
+
+- name: Add the MySQL Yum repository to webserver's repository list
+  become_user: root
+  yum:
+    name: https://repo.mysql.com/mysql84-community-release-el7-1.noarch.rpm
+    state: present
+
+- name: Install mysql-devel
+  become_user: root
+  yum:
+    name: mysql-devel
+    state: present
+
+- name: Install mysql-community-server
+  become_user: root
+  yum:
+    name: mysql-community-server
+    state: present
+

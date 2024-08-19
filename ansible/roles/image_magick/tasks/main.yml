@@ -1,0 +1,47 @@
+---
+#ImageMagick
+- name: Recognize ImageMagick
+  ansible.builtin.shell: 'yum list --enablerepo=remi,epel | grep ImageMagick7'
+  register: recognize_imagemagick
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output Recognize ImageMagick
+  ansible.builtin.debug:
+    msg: "{{ recognize_imagemagick }}"
+  changed_when: no
+  ignore_errors: yes
+  when: recognize_imagemagick is failed
+
+- name: Install amazon-linux-extras epel
+  ansible.builtin.shell: '/usr/bin/yes | sudo amazon-linux-extras install epel'
+  timeout: 300
+  when: recognize_imagemagick is failed
+
+- name: Install epel-release and others
+  become_user: root
+  yum:
+    name: 
+      - epel-release
+      - fftw3
+      - libraqm
+    state: present
+  when: recognize_imagemagick is failed
+
+- name: Install remi-release-7 and ImageMagick7
+  ansible.builtin.shell: |
+    sudo rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    sudo yum install -y --enablerepo=remi ImageMagick7 ImageMagick7-devel
+  timeout: 300
+  when: recognize_imagemagick is failed
+
+- name: Install vips packages
+  become_user: root
+  yum:
+    name:                              
+      - vips                                                    
+      - vips-devel
+      - vips-tools                                                                  
+    state: present                                                                           
+  when: recognize_imagemagick is failed
+
