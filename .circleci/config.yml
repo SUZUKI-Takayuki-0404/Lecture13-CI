@@ -84,7 +84,7 @@ jobs:
       - run:
           name: check env_var.sh
           command: |
-            source env_vars.sh #runコマンドごとにパスを通さないといけない
+            source env_vars.sh
             sed -i "s/ec2_publicip/${EC2PublicIP}/g" ansible/inventories/host.yml
             sed -i "s/rds_endpoint/${RDSEndPoint}/g" ansible/site.yml
             sed -i "s/rds_user/${RDSUser}/g" ansible/site.yml
@@ -110,9 +110,9 @@ jobs:
       # /g: グローバルオプション。行全体で一致するすべてのインスタンスを置き換える。
 
       - run:
-          name: check BAH_ENV
+          name: check env_vars
           command: |
-            cat $BASH_ENV
+            cat env_vars.sh
             cat ansible/site.yml
             cat ansible/inventories/host.yml
             cat ansible/ansible.cfg
@@ -126,7 +126,6 @@ jobs:
       - ansible-playbook/playbook:
           playbook: ansible/site.yml
           #playbook-options: -i ${AWS_EC2_IP}, --private-key ~/.ssh/ansible-test-key
-
 
 #----Serverspec----
 workflows:
