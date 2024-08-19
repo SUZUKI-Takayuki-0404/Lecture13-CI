@@ -102,7 +102,8 @@ jobs:
           version: 2.9.23
       - ansible-playbook/playbook:
           playbook: ansible/site.yml
-          inventory-parameters: ansible/inventories/host.yml
+          playbook-options: -i ansible/inventories/host.yml
+          #inventory-parameters: ansible/inventories/host.yml
       #    playbook-options: -i ${EC2PublicIP}, --private-key ~/.ssh/id_rsa
       #- run:
       #    name: run ansible-playbook
@@ -114,11 +115,11 @@ workflows:
     jobs:
       #- cfn-lint
       #- execute-cfn:
-      #    requires:
-      #      - cfn-lint
-      - get-variables-from-cfn
-      #    requires:
-      #      - execute-cfn
+          #requires:
+            #- cfn-lint
+      - get-variables-from-cfn #:
+          #requires:
+            #- execute-cfn
       - execute-ansible:
           requires:
             - get-variables-from-cfn
