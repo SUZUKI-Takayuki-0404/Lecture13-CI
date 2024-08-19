@@ -92,14 +92,13 @@ jobs:
             sed -i "s/rds_pass/${RDSPass}/g" ansible/site.yml
             sed -i "s/s3_name/${S3Name}/g" ansible/site.yml
             sed -i "s/alb_dnsname/${ALBDNSName}/g" ansible/site.yml
-            cat ansible/site.yml
             cat ansible/inventories/host.yml
             cat ansible/ansible.cfg
-            ${KEY_FINGERPRINT}
+            cat ansible/site.yml
 
       - add_ssh_keys:
           fingerprints:
-            - KEY_FINGERPRINT #SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI #${KEY_FINGERPRINT}
+            - ${KEY_FINGERPRINT} #SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI
       - ansible-playbook/install:
           version: 2.9.23
       - ansible-playbook/playbook:
