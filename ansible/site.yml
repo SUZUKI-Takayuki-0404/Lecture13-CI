@@ -19,8 +19,8 @@
     #- aws_storage
 
   vars:
-   - aws_rds_user: ${RDSUser} #admin
-   - aws_rds_pass: ${RDSPass} #password
-   - aws_rds_host: ${RDSEndPoint} #lecture10-rdb.cpi2kykm2rye.ap-northeast-1.rds.amazonaws.com
-   - aws_alb_dns : ${ALBDNSName} #13.115.99.211
-   - aws_s3: ${S3Name} #lecture10-s3
+   - aws_rds_host: rds_endpoint #${RDSEndPoint} #lecture10-rdb.cpi2kykm2rye.ap-northeast-1.rds.amazonaws.com
+   - aws_rds_user: rds_user #${RDSUser} #admin
+   - aws_rds_pass: rds_pass #${RDSPass} #password
+   - aws_s3: s3_name #${S3Name} #lecture10-s3
+   - aws_alb_dns : alb_dnsname #${ALBDNSName} #13.115.99.211

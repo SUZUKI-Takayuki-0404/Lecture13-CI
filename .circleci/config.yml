@@ -84,8 +84,31 @@ jobs:
       - run:
           name: check env_var.sh
           command: |
-            cat env_vars.sh >> $BASH_ENV
-            source $BASH_ENV
+            source env_vars.sh #runコマンドごとにパスを通さないといけない
+            sed -i "s/ec2_publicip/${EC2PublicIP}/g" ansible/inventory/host.yml
+            sed -i "s/rds_endpoint/${RDSEndPoint}/g" ansible/site.yml
+            sed -i "s/rds_user/${RDSUser}/g" ansible/site.yml
+            sed -i "s/rds_pass/${RDSPass}/g" ansible/site.yml
+            sed -i "s/s3_name/${S3Name}/g" ansible/site.yml
+            sed -i "s/alb_dnsname/${ALBDNSName}/g" ansible/site.yml
+            
+            #            ${EC2PublicIP}
+            #            ${RDSEndPoint}
+            #            ${RDSUser}
+            #            ${RDSPass}
+            #            ${S3Name}
+            #            ${ALBDNSName}            #cat env_vars.sh >> $BASH_ENV
+            #source $BASH_ENV
+      #ここで環境変数に追加できる?
+      #参考情報
+      # sed: ストリームエディタ。テキストを操作するためのコマンド。
+      # -i: インプレース編集。ファイルを直接編集するオプション。
+      # "s/EC2_PUBLIC_IP/${EC2_PUBLIC_IP}/g": 置換コマンド。
+      # s: 置換コマンドの開始。
+      # EC2_PUBLIC_IP: 置き換え対象の文字列。
+      # ${EC2_PUBLIC_IP}: 置き換え後の文字列（シェル変数の値）。
+      # /g: グローバルオプション。行全体で一致するすべてのインスタンスを置き換える。
+
       - run:
           name: check BAH_ENV
           command: |
@@ -93,27 +116,8 @@ jobs:
             cat ansible/site.yml
             cat ansible/inventories/host.yml
             cat ansible/ansible.cfg
-            ${EC2PublicIP}
-            ${RDSEndPoint}
-            ${RDSUser}
-            ${RDSPass}
-            ${S3Name}
-            ${ALBDNSName}
             KEY_FINGERPRINT
-#ここで環境変数に追加できる?
-# source env_vars.sh #runコマンドごとにパスを通さないといけない
-# sed -i "s/EC2PublicIP/${EC2PublicIP}/g" ansible/inventory/target.yml
-# sed -i "s/LoadBalancerDNSName/${LoadBalancerDNSName}/g" ansible/site.yml
-# sed -i "s/RDSEndpoint/${RDSEndpoint}/g" ansible/site.yml
-# sed -i "s/S3BucketName/${S3BucketName}/g" ansible/site.yml
-#参考情報
-# sed: ストリームエディタ。テキストを操作するためのコマンド。
-# -i: インプレース編集。ファイルを直接編集するオプション。
-# "s/EC2_PUBLIC_IP/${EC2_PUBLIC_IP}/g": 置換コマンド。
-# s: 置換コマンドの開始。
-# EC2_PUBLIC_IP: 置き換え対象の文字列。
-# ${EC2_PUBLIC_IP}: 置き換え後の文字列（シェル変数の値）。
-# /g: グローバルオプション。行全体で一致するすべてのインスタンスを置き換える。
+
       - add_ssh_keys:
           fingerprints:
             - KEY_FINGERPRINT #SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI #${KEY_FINGERPRINT}
