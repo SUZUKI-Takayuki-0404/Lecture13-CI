@@ -104,7 +104,7 @@ jobs:
           playbook: ansible/site.yml
           #playbook-options: -i ansible/inventories/host.yml
           inventory-parameters: ansible/inventories/host.yml
-          options: "-vvv"
+          #options: "-vvv"
       #    playbook-options: -i ${EC2PublicIP}, --private-key ~/.ssh/id_rsa
       #- run:
       #    name: run ansible-playbook
