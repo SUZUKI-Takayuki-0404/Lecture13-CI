@@ -85,7 +85,7 @@ jobs:
           name: check env_var.sh
           command: |
             source env_vars.sh
-            echo env_vars.sh >> $BASH_ENV
+            cat env_vars.sh >> $BASH_ENV
             cat $BASH_ENV
 
 #ここで環境変数に追加できる?
@@ -104,7 +104,7 @@ jobs:
 # /g: グローバルオプション。行全体で一致するすべてのインスタンスを置き換える。
       - add_ssh_keys:
           fingerprints:
-            - ${KEY_FINGERPRINT}
+            - ${KEY_FINGERPRINT} #SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI
       - ansible-playbook/install:
           version: 2.9.23
       - ansible-playbook/playbook:
