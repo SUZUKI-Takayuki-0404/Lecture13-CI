@@ -93,7 +93,6 @@ jobs:
             sed -i "s/s3_name/${S3Name}/g" ansible/site.yml
             sed -i "s/alb_dnsname/${ALBDNSName}/g" ansible/site.yml
             cat ansible/inventories/host.yml
-            cat ansible/ansible.cfg
             cat ansible/site.yml
       - add_ssh_keys:
           fingerprints:
