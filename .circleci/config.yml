@@ -95,7 +95,6 @@ jobs:
             cat ansible/inventories/host.yml
             cat ansible/ansible.cfg
             cat ansible/site.yml
-
       - add_ssh_keys:
           fingerprints:
             - SHA256:9shNMaqhTZWdPXKvNdj0iz3TqkYWKvoJ7F6tTVY5LtI
@@ -103,7 +102,7 @@ jobs:
           version: 2.9.23
       - ansible-playbook/playbook:
           playbook: ansible/site.yml
-          playbook-options: -i ${EC2PublicIP} #, --private-key ~/.ssh/id_rsa
+          #playbook-options: -i ${EC2PublicIP}, --private-key ~/.ssh/id_rsa
           inventory-parameters: ansible/inventories/host.yml
 
 #----Serverspec----
