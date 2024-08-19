@@ -16,7 +16,6 @@ Parameters:
     #Description: CIDR for "My IP Address"
     #Type: String
     #Default: XXX.XXX.XXX.XXX/32
-  #Instead of a parameter, SYSTEMS Management, NOT "SECRETS" Management, is selected because of cost efficiency
 
   AvailabilityZone1:
     Description: Availability Zone 1
@@ -160,12 +159,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0 #'{{resolve:ssm:/lecture13/my-ip}}' #!Ref MyIPAddress
+          CidrIp: 0.0.0.0/0  #!Ref MyIPAddress
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           SourceSecurityGroupId: !Ref Lecture13SecurityGroupALB
-          #CidrIp: !Ref MyIPAddress
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-ec2-sg
