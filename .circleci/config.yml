@@ -103,8 +103,8 @@ jobs:
           version: 2.9.23
       - ansible-playbook/playbook:
           playbook: ansible/site.yml
+          playbook-options: -i ${EC2PublicIP} #, --private-key ~/.ssh/id_rsa
           inventory-parameters: ansible/inventories/host.yml
-          #playbook-options: -i ${AWS_EC2_IP}, --private-key ~/.ssh/ansible-test-key
 
 #----Serverspec----
 workflows:
