@@ -28,6 +28,18 @@
     regexp: 'user nginx;'
     replace: 'user ec2-user; #nginx;'
 
+- name: Set up nginx.conf - server_names_hash_bucket_size
+  become_user: root
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    insertafter: 'types_hash_max_size 4096;'
+    line: '{{ item.line }}'
+    state: present
+  loop:
+    - line: '    #--------'
+    - line: '    server_names_hash_bucket_size 128;'
+    - line: '    #----For increase size----'
+
 - name: Enable nginx to start automatically
   become_user: root
   ansible.builtin.systemd:

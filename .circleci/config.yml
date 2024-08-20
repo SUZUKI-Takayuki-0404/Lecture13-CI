@@ -5,7 +5,7 @@ orbs:
   aws-cli: circleci/aws-cli@4.1.3
   aws-cloudformation: orbss/aws-cloudformation@0.1.6
   ansible-playbook: orbss/ansible-playbook@0.0.5
-  ruby: circleci/ruby@2.1.3
+  ruby: circleci/ruby@2.1.4
 
 jobs:
   cfn-lint:
@@ -64,10 +64,9 @@ jobs:
             echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env_vars.sh
             echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
             echo export RDSPass=$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
-            echo export S3Name=$(aws cloudformation describe-stacks --stack-name lecture13-s3 --query Stacks[].Parameters[].ParameterValue[] --output text) >> env_vars.sh
+            echo export S3Name=$(aws cloudformation describe-stack-resources --stack-name lecture13-s3 --query StackResources[].PhysicalResourceId[] --output text) >> env_vars.sh
             echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env_vars.sh
             cat env_vars.sh
-            #echo '#!/bin/bash' >> env_vars.sh
       # The "persist_to_workspace" step enables users to add files in a workspace, and the "attach_workspace" step does to download contents from it within a job
       - persist_to_workspace:
           root: .
@@ -104,6 +103,36 @@ jobs:
           playbook-options: -i ansible/inventories/host.yml
 
 #----Serverspec----
+  execute-serverspec:
+    executor: ruby/default
+    steps:
+      - checkout
+      #- attach_workspace:
+      #    at: .
+      #- run:
+      #    name: check env_var.sh
+      #    command: |
+      #      source env_var.sh
+      #      cat env_var.sh
+      #- run:
+      #    name: read env_var.sh
+      #    command: |
+      #      set -x
+      #      cat env_var.sh >> $BASH_ENV
+      #      cat $BASH_ENV
+      - ruby/install:
+          version: 3.2.3
+      - run:
+          name: Install Dependencies
+          command: |
+            cd serverspec
+            bundle install
+      #- run:
+          #name: execute serverspec tests
+          #command: |
+            #cd serverspec
+            #bundle exec rake spec
+
 workflows:
   lecture13-workflow:
     jobs:
@@ -111,9 +140,12 @@ workflows:
       #- execute-cfn:
           #requires:
             #- cfn-lint
-      - get-variables-from-cfn #:
+      - get-variables-from-cfn:
           #requires:
             #- execute-cfn
-      - execute-ansible:
-          requires:
-            - get-variables-from-cfn
+      #- execute-ansible:
+          #requires:
+            #- get-variables-from-cfn
+      - execute-serverspec:
+          #requires:
+            #- execute-ansible
