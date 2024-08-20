@@ -107,8 +107,8 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      #- attach_workspace:
-      #    at: .
+      - attach_workspace:
+          at: .
       #- run:
       #    name: check env_var.sh
       #    command: |
@@ -122,16 +122,20 @@ jobs:
       #      cat $BASH_ENV
       - ruby/install:
           version: 3.2.3
+      - ruby/install-deps:
+          app-dir: serverspec
       #- run:
           #name: Install Dependencies
           #command: |
+            #source env_vars.sh  #追加
+            #cat env_vars.sh  #追加
             #cd serverspec
             #bundle install
-      #- run:
-          #name: execute serverspec tests
-          #command: |
-            #cd serverspec
-            #bundle exec rake spec
+      - run:
+          name: execute serverspec tests
+          command: |
+            cd serverspec
+            bundle exec rake spec
 
 workflows:
   lecture13-workflow:
