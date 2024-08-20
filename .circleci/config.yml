@@ -124,13 +124,15 @@ jobs:
           version: 3.2.3
       - ruby/install-deps:
           app-dir: serverspec
-      #- run:
-          #name: Install Dependencies
-          #command: |
+      - run:
+          name: Bundle Install for Dependencies
+          command: |
+            cd serverspec
+            bundle install
+
             #source env_vars.sh  #追加
             #cat env_vars.sh  #追加
-            #cd serverspec
-            #bundle install
+
       - run:
           name: execute serverspec tests
           command: |
