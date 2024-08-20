@@ -16,7 +16,7 @@
 - name: Install packages on which ruby depends
   become_user: root
   yum:
-    name: 
+    name:
       - gcc-c++
       - glibc-headers
       - openssl-devel
@@ -47,11 +47,11 @@
     - path: /home/ec2-user/.bash_profile
       line: 'export PATH="$HOME/.anyenv/bin:$PATH"'
     - path: /home/ec2-user/.bashrc
-      line: 'export PATH="$HOME/.anyenv/bin:$PATH"'  
+      line: 'export PATH="$HOME/.anyenv/bin:$PATH"'
   when: recognize_anyenv is failed
 
 - name: Load bash_profile and bashrc
-  ansible.builtin.shell: "{{ item.anyenv }}" 
+  ansible.builtin.shell: "{{ item.anyenv }}"
   changed_when: no
   loop:
     - anyenv: source /home/ec2-user/.bash_profile
@@ -59,7 +59,7 @@
   when: recognize_anyenv is failed
 
 - name: Add line to bash_profile to load anyenv automatically
-  lineinfile: 
+  lineinfile:
     path: /home/ec2-user/.bash_profile
     line: 'eval "$(anyenv init -)"'
   when: recognize_anyenv is failed
@@ -73,7 +73,7 @@
   ansible.builtin.shell: '/usr/bin/yes | /home/ec2-user/.anyenv/bin/anyenv install --init'
   when: recognize_anyenv is failed
   register: result_init_anyenv
-  ignore_errors: yes  
+  ignore_errors: yes
 
 - name: Output Init anyenv
   ansible.builtin.debug:
@@ -82,7 +82,7 @@
   ignore_errors: yes
   when: result_init_anyenv is failed
 
-- name: Anyenv install rbenv and nodenv
+- name: Anyenv Install rbenv and nodenv
   ansible.builtin.shell: "{{ item.anyenv }}"
   timeout: 60
   loop:
@@ -98,7 +98,7 @@
   changed_when: no
   ignore_errors: yes
   when: result_anyenv_install_rbenv_nodenv is failed
- 
+
 - name: Recognize rbenv and nodenv
   ansible.builtin.shell: |
     rbenv -v
@@ -205,4 +205,3 @@
   ansible.builtin.shell: source /home/ec2-user/.bash_profile
   changed_when: no
   when: recognize_ruby_node is failed
-
