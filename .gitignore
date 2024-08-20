@@ -1,2 +1,5 @@
+#
 ### IntelliJ IDEA ###
 .idea/
+### draft template ###
+cloudformation_template

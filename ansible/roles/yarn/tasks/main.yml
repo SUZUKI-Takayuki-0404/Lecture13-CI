@@ -1,0 +1,36 @@
+---
+#yarn
+- name: Recognize yarn 
+  ansible.builtin.shell: 'yarn -v'
+  register: recognize_yarn
+  changed_when: no
+  ignore_errors: yes
+
+- name: Install yarn 1.22.19
+  ansible.builtin.shell: "{{ item.yarn }}"
+  loop:
+    - yarn: npm install --location=global yarn@1.22.19
+    - yarn: nodenv rehash  
+  when: recognize_yarn is failed
+
+- name: Add yarn to bash_profile and bashrc PATH
+  lineinfile:
+    path: "{{ item.path }}"
+    line: "{{ item.line }}"
+  loop:
+    - path: /home/ec2-user/.bash_profile
+      line: 'export PATH="$HOME/.anyenv/envs/nodenv/shims:$PATH"'
+    - path: /home/ec2-user/.bashrc
+      line: 'export PATH="$HOME/.anyenv/envs/nodenv/shims:$PATH"'
+  when: recognize_yarn is failed
+
+- name: Load bash_profile and bashrc
+  ansible.builtin.shell: "{{ item.yarn }}"
+  changed_when: no
+  loop:
+    - yarn: source /home/ec2-user/.bash_profile
+    - yarn: source /home/ec2-user/.bashrc
+  when: recognize_yarn is failed
+
+
+

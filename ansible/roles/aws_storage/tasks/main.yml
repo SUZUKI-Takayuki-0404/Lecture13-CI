@@ -1,0 +1,57 @@
+---
+# tasks file for roles/aws_storage
+
+#---- development.rb ----
+
+- name: Set up development.rb - storage.service
+  ansible.builtin.replace:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/environments/development.rb
+    after: '(see config/storage.yml for options)'
+    before: 'config.action_mailer.raise_delivery_errors'
+    regexp: 'config.active_storage.service = :local'
+    replace: 'config.active_storage.service = :amazon #local'
+
+- name: Set up development.rb - config.assets.debug
+  ansible.builtin.lineinfile:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/environments/development.rb
+    insertafter: 'config.assets.quiet = true'
+    line: '{{ item.line }}'
+    state: present
+  loop:  # reverse order because an "insertafter" inserts just next line
+    - line: '  config.assets.debug = false'
+    - line: '  #Debug mode disables concatination and "preprocesing of assets";'
+    - line: '  #----'
+
+- name: Set up development.rb - config.host
+  ansible.builtin.lineinfile:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/environments/development.rb
+    insertafter: 'config.action_controller.raise_on_missing_callback_actions'
+    line: '{{ item.line }}'
+    state: present
+  loop:
+    - line: '  #--------'
+    - line: "  config.hosts << '{{ aws_alb_dns }}'"
+    - line: '  #----For ALB DNS----'
+
+- name: Precompile rails assets
+  ansible.builtin.shell: 'bin/rails assets:precompile'
+  args:
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+  changed_when: no
+
+#---- storage.yml ----
+- name: Set up storage.yml
+  ansible.builtin.replace:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/storage.yml
+    after: 'amazon'
+    before: 'google'
+    regexp: 'bucket: <%= ENV'
+    replace: 'bucket: {{ aws_s3 }}  #<%= ENV'
+
+#---- Reboot EC2----
+- name: Reboot ec2 instance
+  become_user: root
+  ansible.builtin.reboot:
+    pre_reboot_delay: 10
+    post_reboot_delay: 10
+

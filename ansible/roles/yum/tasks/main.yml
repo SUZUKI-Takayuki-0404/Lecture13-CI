@@ -1,0 +1,26 @@
+---
+
+##-------------------------------------------------
+##Countermeasure for following error:
+##  BDB0113 Thread/process failed: BDB1507 Thread died in Berkeley DB library
+##  DB_RUNRECOVERY: Fatal error, run database recovery
+#
+##RPM database recovery
+#- name: Rebuild RPM database
+#  become_user: root
+#  ansible.builtin.command: rpm --rebuilddb
+#
+##Clear cache
+#- name: Clean YUM cache
+#  become_user: root
+#  ansible.builtin.command: yum clean all
+##-------------------------------------------------
+
+#----
+# Update yum
+- name: update yum
+  become_user: root
+  yum:
+    name: '*'
+    state: latest
+

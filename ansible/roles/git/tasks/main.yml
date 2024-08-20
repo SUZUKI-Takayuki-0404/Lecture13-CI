@@ -1,0 +1,7 @@
+---
+- name: Install git
+  become_user: root
+  yum:
+    name: git
+    state: latest
+

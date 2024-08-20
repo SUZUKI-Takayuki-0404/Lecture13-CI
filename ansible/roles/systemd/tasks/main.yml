@@ -1,0 +1,53 @@
+---
+# tasks file for roles/systemd
+
+- name: Copy puma.service to /etc/systemd/system
+  become_user: root
+  ansible.builtin.copy:
+    src: /home/ec2-user/raisetech-live8-sample-app/samples/puma.service.sample
+    dest: /etc/systemd/system/puma.service
+    owner: ec2-user
+    remote_src: yes
+  ignore_errors: yes
+
+- name: Enable puma.service to start automatically
+  become_user: root
+  ansible.builtin.systemd:
+    name: puma.service
+    enabled: yes
+    state: reloaded  #started #stopped #restarted
+  register: systemd_result
+
+- name: Output systemd result
+  ansible.builtin.debug:
+    msg: "{{ systemd_result }}"
+  changed_when: no
+  ignore_errors: yes
+  when: systemd_result is failed
+
+- name: Systemd Status
+  ansible.builtin.shell: 'systemctl status puma.service'
+  register: systemd_status_result
+  changed_when: no
+  ignore_errors: yes
+  when: systemd_result is failed
+
+- name: Output systemd status result
+  ansible.builtin.debug:
+    msg: "{{ systemd_status_result }}"
+  changed_when: no
+  ignore_errors: yes
+  when: systemd_result is failed
+
+- name: Check execution user
+  ansible.builtin.shell: 'ps aux | grep puma'
+  register: check_user
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output execution user
+  ansible.builtin.debug:
+    msg: "{{ check_user }}"
+  changed_when: no
+  ignore_errors: yes
+

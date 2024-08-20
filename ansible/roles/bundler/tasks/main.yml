@@ -1,0 +1,20 @@
+---
+#bundler
+- name: Recognize bundler
+  ansible.builtin.shell: '/home/ec2-user/.anyenv/envs/rbenv/shims/bundler -v'
+  register: recognize_bundler
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output Recognize bundler
+  ansible.builtin.debug:
+    msg: "{{ recognize_bundler }}"
+  changed_when: no
+  ignore_errors: yes
+  when: recognize_bundler != 'Bundler version 2.3.14'
+
+- name: Install bundler 2.3.14 by updating system version
+  ansible.builtin.shell: 'gem update --system 3.3.14'
+  become: no
+  when: recognize_bundler != 'Bundler version 2.3.14'
+

@@ -1,0 +1,25 @@
+- name: playroles
+  hosts: webserver
+  become: yes
+  become_user: ec2-user
+  gather_facts: true
+  roles:
+    - yum
+    - mysql
+    - git
+    - anyenv
+    - bundler
+    - rails
+    - yarn
+    - image_magick
+    - sample_app
+    - systemd
+    - nginx
+    - aws_storage
+
+  vars:
+   - aws_rds_host: replace_rds_endpoint  #To be replaced
+   - aws_rds_user: replace_rds_user  #To be replaced
+   - aws_rds_pass: replace_rds_pass  #To be replaced
+   - aws_s3: replace_s3_name  #To be replaced
+   - aws_alb_dns: replace_alb_dnsname  #To be replaced

@@ -1,0 +1,75 @@
+---
+# tasks file for roles/nginx
+
+- name: Recognize Nginx
+  ansible.builtin.shell: '/usr/sbin/nginx -v'
+  register: recognize_nginx
+  changed_when: no
+  ignore_errors: yes
+
+- name: Install Nginx
+  ansible.builtin.shell: '/usr/bin/yes | timeout 300 sudo amazon-linux-extras install nginx1'
+  #timeout: 300
+  when: recognize_nginx is failed
+
+- name: Set up app.conf
+  become_user: root
+  ansible.builtin.template:
+    src: roles/nginx/templates/app.conf.j2
+    dest: /etc/nginx/conf.d/app.conf
+    remote_src: no
+
+- name: Set up nginx.conf
+  become_user: root
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    after: 'http://nginx.org/ru/docs/'
+    before: 'worker_processes auto;'
+    regexp: 'user nginx;'
+    replace: 'user ec2-user; #nginx;'
+
+- name: Set up nginx.conf - server_names_hash_bucket_size
+  become_user: root
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    insertafter: 'types_hash_max_size 4096;'
+    line: '{{ item.line }}'
+    state: present
+  loop:
+    - line: '    #--------'
+    - line: '    server_names_hash_bucket_size 128;'
+    - line: '    #----For increase size----'
+
+- name: Enable nginx to start automatically
+  become_user: root
+  ansible.builtin.systemd:
+    name: nginx.service
+    enabled: yes
+    state: stopped #started #reloaded #restarted
+  register: nginx_result
+
+- name: Nginx Status
+  ansible.builtin.shell: 'systemctl status nginx'
+  register: nginx_status_result
+  changed_when: no
+  ignore_errors: yes
+  when: nginx_result is failed
+
+- name: Output Nginx status result
+  ansible.builtin.debug:
+    msg: "{{ nginx_status_result }}"
+  changed_when: no
+  ignore_errors: yes
+  when: nginx_result is failed
+
+- name: Check execution user
+  ansible.builtin.shell: 'ps aux | grep nginx'
+  register: check_user
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output execution user
+  ansible.builtin.debug:
+    msg: "{{ check_user }}"
+  changed_when: no
+  ignore_errors: yes

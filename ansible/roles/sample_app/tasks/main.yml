@@ -1,0 +1,144 @@
+---
+# tasks file for roles/sample_app
+
+#---- sample app ----
+
+- name: Rcognize sample-app folder
+  ansible.builtin.stat:
+    path: /home/ec2-user/raisetech-live8-sample-app
+  register: recogzize_sample_app
+  changed_when: no
+  ignore_errors: yes
+
+- name: Clone raisetech-live8-sample-app
+  git:
+    repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
+    dest: /home/ec2-user/raisetech-live8-sample-app
+  ignore_errors: yes
+  when: not recogzize_sample_app.stat.exists
+
+#---- database.yml ----
+
+- name: Set up database.yml from templates
+  ansible.builtin.template:
+    src: roles/sample_app/templates/database.yml.j2
+    dest: /home/ec2-user/raisetech-live8-sample-app/config/database.yml
+    remote_src: no
+
+#---- bin/setup ----
+
+- name: Rcognize gem sass_rails
+  ansible.builtin.shell: 'gem list | grep sass-rails'
+  register: recognize_gem_sass_rails
+  changed_when: no
+  ignore_errors: yes
+
+- name: Output recognize_gem_sass_rails
+  ansible.builtin.debug:
+    msg: "{{ recognize_gem_sass_rails }}"
+  changed_when: no
+  ignore_errors: yes
+
+- name: Install related gem packages
+  ansible.builtin.shell: 'gem install "{{ item.gem }}"'
+  loop:
+    - gem: sass-rails
+    - gem: date
+#    - gem: mysql2
+#    - gem: puma
+#    - gem: turbolinks
+#    - gem: jbuilder
+#    - gem: bootsnap
+#    - gem: ranked-model
+#    - gem: slim-rails
+#    - gem: msgpack
+#    - gem: aws-sdk-s3
+#    - gem: image_processing
+#    - gem: net-smtp
+#    - gem: jsbundling-rails
+#    - gem: turbo-rails
+#    - gem: sd_notify
+#    - gem: byebug
+#    - gem: rspec-rails
+#    - gem: web-console
+#    - gem: rack-mini-profiler
+#    - gem: listen
+#    - gem: spring
+#    - gem: redis
+#    - gem: turbolinks-source
+#    - gem: slim
+#    - gem: aws-sdk-core
+#    - gem: aws-sdk-kms
+#    - gem: aws-sigv4
+#    - gem: mini_magick
+#    - gem: ruby-vips
+#    - gem: net-protocol
+#    - gem: rspec-core
+#    - gem: rspec-expectations
+#    - gem: rspec-mocks
+#    - gem: rspec-support
+#    - gem: bindex
+#    - gem: rb-fsevent
+#    - gem: rb-inotify
+#    - gem: net-imap
+#    - gem: irb
+#    - gem: sprockets-rails
+#    - gem: tilt
+#    - gem: temple
+#    - gem: aws-eventstream
+#    - gem: aws-partitions
+#    - gem: jmespath
+#    - gem: ffi
+#    - gem: diff-lcs
+#    - gem: rdoc
+#    - gem: reline
+#    - gem: psych
+#    - gem: io-console
+#    - gem: stringio
+  when: recognize_gem_sass_rails is failed
+
+- name: Execute bin/setup (need activating AWS RDS for this process)
+  ansible.builtin.shell: 'timeout 1800 /home/ec2-user/.anyenv/envs/rbenv/shims/ruby bin/setup'
+  args:
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+  register: binsetup_result
+  #timeout: 1800
+  when: recognize_gem_sass_rails is failed
+
+- name: Output binsetup_result
+  ansible.builtin.debug:
+    msg: "{{ binsetup_result }}"
+  changed_when: no
+  when: binsetup_result is failed
+
+#---- Preparation for bin/dev ----
+
+- name: Set up yarn for bin/dev
+  ansible.builtin.shell: '/home/ec2-user/.anyenv/envs/nodenv/shims/yarn install'
+  args:
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+  register: yarn_result
+  when: not binsetup_result is failed
+
+- name: Output yarn install result
+  ansible.builtin.debug:
+    msg: "{{ yarn_result }}"
+  changed_when: no
+  ignore_errors: yes
+  when: not binsetup_result is failed
+
+- name: Set up Sample app
+  ansible.builtin.shell: 'timeout 60 bin/dev'
+  #timeout: 30
+  args:
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+  changed_when: no
+  ignore_errors: yes
+  when: not binsetup_result is failed
+
+#---- Reboot EC2----
+- name: Reboot ec2 instance
+  become_user: root
+  ansible.builtin.reboot:
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
