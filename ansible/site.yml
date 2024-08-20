@@ -5,17 +5,17 @@
   gather_facts: true
   roles:
     - yum
-    #- mysql
-    #- git
-    #- anyenv
-    #- bundler
-    #- rails
-    #- yarn
-    #- image_magick
-    #- sample_app
-    #- systemd
-    #- nginx
-    #- aws_storage
+    - mysql
+    - git
+    - anyenv
+    - bundler
+    - rails
+    - yarn
+    - image_magick
+    - sample_app
+    - systemd
+    - nginx
+    - aws_storage
 
   vars:
    - aws_rds_host: rds_endpoint  #To be replaced
