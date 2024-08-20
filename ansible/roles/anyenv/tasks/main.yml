@@ -90,7 +90,7 @@
   register: result_anyenv_install_rbenv_nodenv
   when: recognize_anyenv is failed
   ignore_errors: yes
-  timeout: 60
+  timeout: '60'
 
 - name: Output Anyenv install rbenv and nodenv
   ansible.builtin.debug:
