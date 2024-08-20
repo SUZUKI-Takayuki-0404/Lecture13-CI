@@ -14,14 +14,14 @@
   when: recognize_imagemagick is failed
 
 - name: Install amazon-linux-extras epel
-  ansible.builtin.shell: '/usr/bin/yes | sudo amazon-linux-extras install epel'
-  timeout: 300
+  ansible.builtin.shell: '/usr/bin/yes | timeout 300 sudo amazon-linux-extras install epel'
+  #timeout: 300
   when: recognize_imagemagick is failed
 
 - name: Install epel-release and others
   become_user: root
   yum:
-    name: 
+    name:
       - epel-release
       - fftw3
       - libraqm
@@ -30,18 +30,17 @@
 
 - name: Install remi-release-7 and ImageMagick7
   ansible.builtin.shell: |
-    sudo rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-    sudo yum install -y --enablerepo=remi ImageMagick7 ImageMagick7-devel
-  timeout: 300
+    timeout 300 sudo rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    timeout 300 sudo yum install -y --enablerepo=remi ImageMagick7 ImageMagick7-devel
+  #timeout: 300
   when: recognize_imagemagick is failed
 
 - name: Install vips packages
   become_user: root
   yum:
-    name:                              
-      - vips                                                    
+    name:
+      - vips
       - vips-devel
-      - vips-tools                                                                  
-    state: present                                                                           
+      - vips-tools
+    state: present
   when: recognize_imagemagick is failed
-

@@ -8,8 +8,8 @@
   ignore_errors: yes
 
 - name: Install Nginx
-  ansible.builtin.shell: '/usr/bin/yes | sudo amazon-linux-extras install nginx1'
-  timeout: 300
+  ansible.builtin.shell: '/usr/bin/yes | timeout 300 sudo amazon-linux-extras install nginx1'
+  #timeout: 300
   when: recognize_nginx is failed
 
 - name: Set up app.conf
@@ -61,4 +61,3 @@
     msg: "{{ check_user }}"
   changed_when: no
   ignore_errors: yes
-
