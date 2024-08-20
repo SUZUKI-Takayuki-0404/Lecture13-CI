@@ -14,7 +14,7 @@ default: &default
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: "{{ aws_rds_user }}" #username: root
-  password: "{{ aws_rds_pass }}" #password: 
+  password: "{{ aws_rds_pass }}" #password:
   host: "{{ aws_rds_host }}"
   socket: /var/lib/mysql/mysql.sock
 

@@ -86,12 +86,12 @@ jobs:
           command: |
             source env_vars.sh
             cat env_vars.sh
-            sed -i "s/ec2_publicip/${EC2PublicIP}/g" ansible/inventories/host.yml
-            sed -i "s/rds_endpoint/${RDSEndPoint}/g" ansible/site.yml
-            sed -i "s/rds_user/${RDSUser}/g" ansible/site.yml
-            sed -i "s/rds_pass/${RDSPass}/g" ansible/site.yml
-            sed -i "s/s3_name/${S3Name}/g" ansible/site.yml
-            sed -i "s/alb_dnsname/${ALBDNSName}/g" ansible/site.yml
+            sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" ansible/inventories/host.yml
+            sed -i "s/replace_rds_endpoint/${RDSEndPoint}/g" ansible/site.yml
+            sed -i "s/replace_rds_user/${RDSUser}/g" ansible/site.yml
+            sed -i "s/replace_rds_pass/${RDSPass}/g" ansible/site.yml
+            sed -i "s/replace_s3_name/${S3Name}/g" ansible/site.yml
+            sed -i "s/replace_alb_dnsname/${ALBDNSName}/g" ansible/site.yml
             cat ansible/inventories/host.yml
             cat ansible/site.yml
       - add_ssh_keys:
