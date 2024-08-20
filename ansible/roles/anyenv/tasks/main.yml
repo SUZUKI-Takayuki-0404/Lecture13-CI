@@ -84,7 +84,7 @@
 
 - name: Anyenv Install rbenv and nodenv
   ansible.builtin.shell: "{{ item.anyenv }}"
-  #timeout: 60
+  timeout: '60'
   loop:
     - anyenv: '/home/ec2-user/.anyenv/bin/anyenv install rbenv'
     - anyenv: '/home/ec2-user/.anyenv/bin/anyenv install nodenv'
@@ -159,7 +159,7 @@
     eval "$(anyenv init -)"
     rbenv install 3.2.3
     rbenv global 3.2.3
-  timeout: 1200
+  timeout: '1200'
   when: recognize_ruby_node is failed
 
 - name: Install Node.js 17.9.1
@@ -168,7 +168,7 @@
     eval "$(anyenv init -)"
     nodenv install 17.9.1
     nodenv global 17.9.1
-  timeout: 30
+  timeout: '30'
   when: recognize_ruby_node is failed
 
 - name: Add ruby and node to .bash_profile and .bashrc PATH
