@@ -122,11 +122,11 @@ jobs:
       #      cat $BASH_ENV
       - ruby/install:
           version: 3.2.3
-      - run:
-          name: Install Dependencies
-          command: |
-            cd serverspec
-            bundle install
+      #- run:
+          #name: Install Dependencies
+          #command: |
+            #cd serverspec
+            #bundle install
       #- run:
           #name: execute serverspec tests
           #command: |
@@ -140,12 +140,12 @@ workflows:
       #- execute-cfn:
           #requires:
             #- cfn-lint
-      - get-variables-from-cfn:
+      - get-variables-from-cfn #:
           #requires:
             #- execute-cfn
       #- execute-ansible:
           #requires:
             #- get-variables-from-cfn
-      - execute-serverspec:
+      - execute-serverspec #:
           #requires:
             #- execute-ansible
