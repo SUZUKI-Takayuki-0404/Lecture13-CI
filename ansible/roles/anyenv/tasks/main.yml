@@ -82,9 +82,9 @@
   ignore_errors: yes
   when: result_init_anyenv is failed
 
-- name: Output Init anyenv_ #- name: Anyenv Install rbenv and nodenv
+- name: Anyenv Install rbenv and nodenv
   ansible.builtin.shell: "{{ item.anyenv }}"
-  timeout: 60
+  #timeout: 60
   loop:
     - anyenv: '/home/ec2-user/.anyenv/bin/anyenv install rbenv'
     - anyenv: '/home/ec2-user/.anyenv/bin/anyenv install nodenv'
