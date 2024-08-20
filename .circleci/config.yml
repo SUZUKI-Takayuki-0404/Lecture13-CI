@@ -127,9 +127,9 @@ jobs:
       - run:
           name: bundle install for dependencies
           command: |
+            cd serverspec
             bundle install
 
-            #cd serverspec
             #source env_vars.sh  #追加
             #cat env_vars.sh  #追加
 
