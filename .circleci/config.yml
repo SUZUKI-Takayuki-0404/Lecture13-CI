@@ -107,8 +107,8 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      - attach_workspace:
-          at: .
+      #- attach_workspace:
+      #    at: .
       #- run:
       #    name: check env_var.sh
       #    command: |
@@ -125,7 +125,7 @@ jobs:
       - ruby/install-deps:
           app-dir: serverspec
       - run:
-          name: Bundle Install for Dependencies
+          name: bundle install for dependencies
           command: |
             cd serverspec
             bundle install
@@ -152,6 +152,7 @@ workflows:
       #- execute-ansible:
           #requires:
             #- get-variables-from-cfn
-      - execute-serverspec #:
-          #requires:
-            #- execute-ansible
+      - execute-serverspec:
+          requires:
+            #- execute-ansible        get-variables-from-cfn
+            - get-variables-from-cfn
