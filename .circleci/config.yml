@@ -116,6 +116,9 @@ jobs:
             cat env_vars.sh
             sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
             cat serverspec/spec/spec_helper.rb
+      - add_ssh_keys:
+          fingerprints:
+            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:
