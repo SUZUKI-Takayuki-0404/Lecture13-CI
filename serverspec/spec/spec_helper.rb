@@ -15,7 +15,7 @@ else
 end
 
 #host = ENV['TARGET_HOST']
-host = ENV[replace_ec2_publicip]  #To be replaced
+host = ENV['replace_ec2_publicip']  #To be replaced
 
 options = Net::SSH::Config.for(host)
 
