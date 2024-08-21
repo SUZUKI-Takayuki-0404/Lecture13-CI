@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 listen_port80 = 80
-listen_port20 = 22
+listen_port22 = 22
 
 # MariaDBがインストールされていないこと(＝検索結果に含まれない)
 describe command('yum list installed | grep mariad') do
