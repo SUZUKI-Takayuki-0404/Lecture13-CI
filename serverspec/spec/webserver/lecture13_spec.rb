@@ -65,7 +65,7 @@ describe port(listen_port80) do
 end
 
 # ポート22番がリッスンであること
-describe port(listen_port20) do
+describe port(listen_port22) do
   it { should be_listening }
 end
 
