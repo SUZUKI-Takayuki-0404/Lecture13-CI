@@ -14,7 +14,8 @@ else
   set :sudo_password, ENV['SUDO_PASSWORD']
 end
 
-host = ENV['TARGET_HOST']
+#host = ENV['TARGET_HOST']
+host = ENV[replace_ec2_publicip]  #To be replaced
 
 options = Net::SSH::Config.for(host)
 

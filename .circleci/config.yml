@@ -107,19 +107,15 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      #- attach_workspace:
-      #    at: .
-      #- run:
-      #    name: check env_var.sh
-      #    command: |
-      #      source env_var.sh
-      #      cat env_var.sh
-      #- run:
-      #    name: read env_var.sh
-      #    command: |
-      #      set -x
-      #      cat env_var.sh >> $BASH_ENV
-      #      cat $BASH_ENV
+      - attach_workspace:
+          at: .
+      - run:
+          name: input host(Public IP) from env_vars into spec_helper replace command
+          command: |
+            source env_vars.sh
+            cat env_vars.sh
+            sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
+            cat serverspec/spec/spec_helper.rb
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:
@@ -129,10 +125,6 @@ jobs:
           command: |
             cd serverspec
             bundle install
-
-            #source env_vars.sh  #追加
-            #cat env_vars.sh  #追加
-
       - run:
           name: execute serverspec tests
           command: |
