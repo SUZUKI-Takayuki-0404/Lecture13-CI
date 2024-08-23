@@ -61,12 +61,12 @@ end
 
 # ポート80番がリッスンであること
 describe port(listen_port80) do
-  it { should be_listening }
+  it { should be_listening.with('tcp') }
 end
 
 # ポート22番がリッスンであること
 describe port(listen_port22) do
-  it { should be_listening }
+  it { should be_listening.with('tcp') }
 end
 
 # テスト接続して動作すること(ステータスコード200)

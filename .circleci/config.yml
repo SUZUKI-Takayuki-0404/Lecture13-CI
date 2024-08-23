@@ -124,8 +124,7 @@ jobs:
             cat env_vars.sh
             mkdir -p ~/.ssh
             #echo "IdentityFile ~/.ssh/id_rsa"
-            echo "Host ${EC2PublicIP}" >> ~/.ssh/config
-            #echo "Host webserver" >> ~/.ssh/config
+            echo "Host webserver" >> ~/.ssh/config
             echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
             cat ~/.ssh/config
