@@ -114,19 +114,19 @@ jobs:
           command: |
             source env_vars.sh
             cat env_vars.sh
-            sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
-            cat serverspec/spec/spec_helper.rb
-
-            #mv serverspec/spec/webserver/ serverspec/spec/${EC2PublicIP}/
-
             #mkdir -p ~/.ssh
             #echo "Host target" >> ~/.ssh/config
             #echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             #echo "User ec2-user" >> ~/.ssh/config
+            
+            #sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
+            #cat serverspec/spec/spec_helper.rb
 
-      - add_ssh_keys:
-          fingerprints:
-            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
+            #mv serverspec/spec/webserver/ serverspec/spec/${EC2PublicIP}/
+
+      #- add_ssh_keys:
+          #fingerprints:
+            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:

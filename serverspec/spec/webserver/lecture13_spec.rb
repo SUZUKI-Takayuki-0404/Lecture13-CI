@@ -71,9 +71,9 @@ describe port(listen_port80) do
 end
 
 # ポート22番がリッスンであること
-#describe port(listen_port22) do
-#  it { should be_listening }
-#end
+describe port(listen_port22) do
+  it { should be_listening }
+end
 
 # テスト接続して動作すること(ステータスコード200)
 describe command('curl http://127.0.0.1:#{listen_port80}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
