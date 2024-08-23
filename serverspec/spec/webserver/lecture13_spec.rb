@@ -69,12 +69,12 @@ describe port(listen_port22) do
   it { should be_listening.with('tcp') }
 end
 
-# テスト接続して動作すること(ステータスコード200)
+# テスト接続して動作すること(ステータスコード200)  要:EC2に加えRDSも作動
 describe command('curl http://127.0.0.1:#{listen_port80}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
   its(:stdout) { should match /^200$/ }
 end
 
-# テスト接続して動作すること(ステータスコード200)
+# テスト接続して動作すること(ステータスコード200)  要:EC2に加えRDSも作動
 describe command('curl http://127.0.0.1:#{listen_port22}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
   its(:stdout) { should match /^200$/ }
 end
