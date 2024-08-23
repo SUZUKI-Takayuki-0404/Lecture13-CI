@@ -116,17 +116,10 @@ jobs:
             cat env_vars.sh
             mkdir -p ~/.ssh
             echo "Host webserver" >> ~/.ssh/config
-            echo "HostName ${ALBDNSName}" >> ~/.ssh/config
+            echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
             echo "IdentityFile ~/.ssh/id_rsa"
             cat ~/.ssh/config
-            
-            #echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
-
-            #sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
-            #cat serverspec/spec/spec_helper.rb
-
-            #mv serverspec/spec/webserver/ serverspec/spec/${EC2PublicIP}/
 
       - add_ssh_keys:
           fingerprints:
