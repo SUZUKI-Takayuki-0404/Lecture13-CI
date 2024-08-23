@@ -15,12 +15,12 @@ else
 end
 
 #host = ENV['TARGET_HOST']
-host = ENV[ webserver ]
+host = ENV[ "webserver" ]
 
 options = Net::SSH::Config.for(host)
 
 #options[:user] ||= Etc.getlogin
-options[:user] ||= Eec2-user
+options[:user] ||= "Eec2-user"
 
 set :host,        options[:host_name] || host
 set :ssh_options, options
