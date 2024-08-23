@@ -7,6 +7,11 @@ orbs:
   ansible-playbook: orbss/ansible-playbook@0.0.5
   ruby: circleci/ruby@2.1.4
 
+parameters:
+  stack-name:
+    type: string
+    default: "lecture13"  # << pipeline.parameters.stack-name >>
+
 jobs:
   cfn-lint:
     executor: python/default
@@ -107,6 +112,9 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
+      #- add_ssh_keys:
+          #fingerprints:
+            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - attach_workspace:
           at: .
       - run:
@@ -115,15 +123,11 @@ jobs:
             source env_vars.sh
             cat env_vars.sh
             mkdir -p ~/.ssh
-            #echo "Host webserver" >> ~/.ssh/config
+            #echo "IdentityFile ~/.ssh/id_rsa"
+            echo "Host webserver" >> ~/.ssh/config
             echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
-            echo "IdentityFile ~/.ssh/id_rsa"
             cat ~/.ssh/config
-
-      #- add_ssh_keys:
-          #fingerprints:
-            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:
