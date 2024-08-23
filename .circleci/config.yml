@@ -114,10 +114,10 @@ jobs:
           command: |
             source env_vars.sh
             cat env_vars.sh
-            #mkdir -p ~/.ssh
-            #echo "Host target" >> ~/.ssh/config
-            #echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
-            #echo "User ec2-user" >> ~/.ssh/config
+            mkdir -p ~/.ssh
+            echo "Host target" >> ~/.ssh/config
+            echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
+            echo "User ec2-user" >> ~/.ssh/config
             
             #sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
             #cat serverspec/spec/spec_helper.rb
