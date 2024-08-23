@@ -61,7 +61,7 @@ end
 
 # ポート80番がリッスンであること
 describe port(listen_port80) do
-  it { should be_listening.with('tcp') }
+  it { should be_listening.with('udp') }
 end
 
 # ポート22番がリッスンであること
@@ -71,5 +71,10 @@ end
 
 # テスト接続して動作すること(ステータスコード200)
 describe command('curl http://127.0.0.1:#{listen_port80}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
+  its(:stdout) { should match /^200$/ }
+end
+
+# テスト接続して動作すること(ステータスコード200)
+describe command('curl http://127.0.0.1:#{listen_port22}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
   its(:stdout) { should match /^200$/ }
 end
