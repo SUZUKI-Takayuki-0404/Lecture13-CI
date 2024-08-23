@@ -128,9 +128,9 @@ jobs:
 
             #mv serverspec/spec/webserver/ serverspec/spec/${EC2PublicIP}/
 
-      #- add_ssh_keys:
-          #fingerprints:
-            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
+      - add_ssh_keys:
+          fingerprints:
+            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:

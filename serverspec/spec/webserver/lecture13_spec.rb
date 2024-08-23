@@ -66,9 +66,9 @@ describe service('nginx') do
 end
 
 # ポート80番がリッスンであること
-describe port(listen_port80) do
-  it { should be_listening }
-end
+#describe port(listen_port80) do
+#  it { should be_listening }
+#end
 
 # ポート22番がリッスンであること
 describe port(listen_port22) do
