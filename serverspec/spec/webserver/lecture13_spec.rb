@@ -61,7 +61,7 @@ end
 
 # ポート80番がリッスンであること
 describe port(listen_port80) do
-  it { should be_listening.with('udp') }
+  it { should be_listening.with('tcp') }
 end
 
 # ポート22番がリッスンであること
