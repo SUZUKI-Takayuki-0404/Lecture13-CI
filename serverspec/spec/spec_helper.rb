@@ -15,12 +15,10 @@ else
 end
 
 host = ENV['TARGET_HOST']
-#host = ENV['replace_ec2_publicip']  #To be replaced
 
 options = Net::SSH::Config.for(host)
 
 options[:user] ||= Etc.getlogin
-#options[:user] ||= 'ec2-user'
 
 set :host,        options[:host_name] || host
 set :ssh_options, options

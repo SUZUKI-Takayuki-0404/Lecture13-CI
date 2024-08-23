@@ -115,15 +115,15 @@ jobs:
             source env_vars.sh
             cat env_vars.sh
             mkdir -p ~/.ssh
-            echo "Host webserver" >> ~/.ssh/config
+            #echo "Host webserver" >> ~/.ssh/config
             echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
             echo "IdentityFile ~/.ssh/id_rsa"
             cat ~/.ssh/config
 
-      - add_ssh_keys:
-          fingerprints:
-            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
+      #- add_ssh_keys:
+          #fingerprints:
+            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:

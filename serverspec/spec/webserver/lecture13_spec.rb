@@ -3,12 +3,6 @@ require 'spec_helper'
 listen_port80 = 80
 listen_port22 = 22
 
-# This is an example of a correctly configured network connection in serverspec
-describe host('webserver') do
-  it { should be_reachable }
-  it { should be_resolvable.by('dns') }
-end
-
 # MariaDBがインストールされていないこと(＝検索結果に含まれない)
 describe command('yum list installed | grep mariadb') do
   its(:stdout) { should match '' }
@@ -66,9 +60,9 @@ describe service('nginx') do
 end
 
 # ポート80番がリッスンであること
-#describe port(listen_port80) do
-#  it { should be_listening }
-#end
+describe port(listen_port80) do
+  it { should be_listening }
+end
 
 # ポート22番がリッスンであること
 describe port(listen_port22) do
