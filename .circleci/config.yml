@@ -118,6 +118,7 @@ jobs:
             echo "Host target" >> ~/.ssh/config
             echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
+            cat ~/.ssh/config
             
             #sed -i "s/replace_ec2_publicip/${EC2PublicIP}/g" serverspec/spec/spec_helper.rb
             #cat serverspec/spec/spec_helper.rb
