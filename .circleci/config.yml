@@ -123,12 +123,19 @@ jobs:
             source env_vars.sh
             cat env_vars.sh
             mkdir -p ~/.ssh
+            #touch ~/.ssh/config
             echo "Host webserver" >> ~/.ssh/config
             echo "  HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "  User ec2-user" >> ~/.ssh/config
             #echo "  IdentityFile ~/.ssh/id_rsa"
-            cat "  ~/.ssh/config"
+            cat "~/.ssh/config"
             #echo env | grep PATH
+      - run:
+          name: input host(Public IP) from env_vars into spec_helper replace command
+          command: |
+            cat env_vars.sh
+            echo env | grep PATH
+            echo pwd
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:
