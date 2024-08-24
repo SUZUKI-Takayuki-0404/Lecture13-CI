@@ -18,8 +18,7 @@ host = ENV['TARGET_HOST']
 
 options = Net::SSH::Config.for(host)
 
-#options[:user] ||= Etc.getlogin
-options[:user] ||= "ec2-user"
+options[:user] ||= Etc.getlogin
 
 set :host,        options[:host_name] || host
 set :ssh_options, options
@@ -33,3 +32,18 @@ set :disable_sudo, true  #no need for lecture13
 
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
+
+RSpec.configure do |config|
+  config.before(:all) do
+    puts "Running tests on: #{host_inventory['hostname']} (#{host_inventory['network']['interfaces']['eth0']['addresses'].keys.first})"
+  end
+end
+
+#set :backend, :ssh
+#set :host, 'example.com'  # またはIPアドレス
+#set :ssh_options, {
+#  user: 'user_name',
+#  keys: ['/path/to/private_key'],
+#  forward_agent: true,
+#  auth_methods: ['publickey']
+#}

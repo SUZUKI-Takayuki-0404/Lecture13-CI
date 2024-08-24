@@ -112,9 +112,9 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
+      #- add_ssh_keys:
+          #fingerprints:
+            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - attach_workspace:
           at: .
       - run:
@@ -123,11 +123,12 @@ jobs:
             source env_vars.sh
             cat env_vars.sh
             mkdir -p ~/.ssh
-            echo "IdentityFile ~/.ssh/id_rsa"
+            #echo "IdentityFile ~/.ssh/id_rsa"
             echo "Host webserver" >> ~/.ssh/config
             echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
             cat ~/.ssh/config
+            echo env | grep PATH
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:

@@ -78,3 +78,8 @@ end
 describe command('curl http://127.0.0.1:#{listen_port22}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
   its(:stdout) { should match /^200$/ }
 end
+
+# ホストネーム確認
+describe command('hostname') do
+  its(:stdout) { should match 'webserver' }
+end
