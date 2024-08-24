@@ -132,8 +132,8 @@ jobs:
       - run:
           name: test command
           command: |
-            echo "env | grep PATH"
-            echo pwd
+            env | grep PATH
+            pwd
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:
