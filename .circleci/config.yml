@@ -127,12 +127,12 @@ jobs:
             echo "Host webserver" >> ~/.ssh/config
             echo "  HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "  User ec2-user" >> ~/.ssh/config
-            #echo "  IdentityFile ~/.ssh/id_rsa"
-            cat "~/.ssh/config"
-            #echo env | grep PATH
+            #echo "  IdentityFile >>  ~/.ssh/id_rsa"
+            cat ~/.ssh/config
       - run:
-          name: input host(Public IP) from env_vars into spec_helper replace command
+          name: test command
           command: |
+            #source env_vars.sh
             cat env_vars.sh
             echo env | grep PATH
             echo pwd

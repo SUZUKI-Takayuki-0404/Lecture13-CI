@@ -33,11 +33,11 @@ set :disable_sudo, true  #no need for lecture13
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
 
-#RSpec.configure do |config|
-#  config.before(:all) do
-#    puts "Running tests on: #{host_inventory['hostname']} (#{host_inventory['network']['interfaces']['eth0']['addresses'].keys.first})"
-#  end
-#end
+RSpec.configure do |config|
+  config.before(:all) do
+    puts "Running tests on: #{host_inventory['hostname']} (#{host_inventory['network']['interfaces']['eth0']['addresses'].keys.first})"
+  end
+end
 
 #set :backend, :ssh
 #set :host, 'example.com'  # またはIPアドレス
