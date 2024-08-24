@@ -125,9 +125,9 @@ jobs:
             mkdir -p ~/.ssh
             #echo "IdentityFile ~/.ssh/id_rsa"
             echo "Host webserver" >> ~/.ssh/config
-            echo "HostName ${EC2PublicIP}" >> ~/.ssh/config
+            echo "  HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "User ec2-user" >> ~/.ssh/config
-            cat ~/.ssh/config
+            cat "  ~/.ssh/config"
             echo env | grep PATH
       - ruby/install:
           version: 3.2.3
