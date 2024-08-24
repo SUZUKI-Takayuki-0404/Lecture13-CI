@@ -132,9 +132,7 @@ jobs:
       - run:
           name: test command
           command: |
-            #source env_vars.sh
-            cat env_vars.sh
-            echo env | grep PATH
+            echo "env | grep PATH"
             echo pwd
       - ruby/install:
           version: 3.2.3
