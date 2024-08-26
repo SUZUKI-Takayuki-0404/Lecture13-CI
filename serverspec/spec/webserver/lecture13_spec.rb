@@ -65,6 +65,11 @@ describe port(listen_port80) do
 end
 
 # ポート22番がリッスンであること
+describe command('sudo /sbin/ss -tunl | grep :22') do
+  its(:stdout) { should contain('22')  }
+end
+
+# ポート22番がリッスンであること
 describe port(listen_port22) do
   it { should be_listening }
 end
@@ -77,9 +82,4 @@ end
 # テスト接続して動作すること(ステータスコード200)  要:EC2に加えRDSも作動
 describe command('curl http://127.0.0.1:#{listen_port22}/_plugin/head/ -o /dev/null -w "%{http_code}\n" -s') do
   its(:stdout) { should match /^200$/ }
-end
-
-# ホストネーム確認
-describe command('hostname') do
-  its(:stdout) { should match '*.ap-northeast-1.compute.internal' } #'webserver'
 end

@@ -129,14 +129,14 @@ jobs:
             echo "  User ec2-user" >> ~/.ssh/config
             #echo "  IdentityFile >>  ~/.ssh/id_rsa"
             cat ~/.ssh/config
-      - run:
-          name: test command
-          command: |
-            env | grep PATH
-            pwd
-            export PATH=$PATH:/sbin/ss
-            export PATH=$PATH:/usr/sbin/ss
-            source ~/.bashrc
+#      - run:
+#          name: test command
+#          command: |
+#            env | grep PATH
+#            pwd
+#            export PATH=$PATH:/sbin/ss
+#            export PATH=$PATH:/usr/sbin/ss
+#            source ~/.bashrc
             #sudo ss -tnl
       - ruby/install:
           version: 3.2.3

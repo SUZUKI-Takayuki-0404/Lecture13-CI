@@ -31,20 +31,4 @@ set :disable_sudo, true  #no need for lecture13
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
 # Set PATH
-# set :path, '/sbin:/usr/local/sbin:$PATH'
-
-#----------------------------------------------
-#RSpec.configure do |config|
-#  config.before(:all) do
-#    puts "Running tests on: #{host_inventory['hostname']} (#{host_inventory['network']['interfaces']['eth0']['addresses'].keys.first})"
-#  end
-#end
-
-#set :backend, :ssh
-#set :host, 'example.com'  # またはIPアドレス
-#set :ssh_options, {
-#  user: 'user_name',
-#  keys: ['/path/to/private_key'],
-#  forward_agent: true,
-#  auth_methods: ['publickey']
-#}
+ set :path, '/sbin:/usr/local/sbin:$PATH'
