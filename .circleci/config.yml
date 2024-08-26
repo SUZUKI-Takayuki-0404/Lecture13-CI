@@ -69,12 +69,15 @@ jobs:
             echo export EC2InstanceId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-ec2' --query "StackResources[?ResourceType=='AWS::EC2::Instance'].PhysicalResourceId" --output text) >> env_vars.sh
             echo export EC2PublicIP=$(aws ec2 describe-instances --instance-ids $EC2InstanceId --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
             #----RDS----
-            echo export RDSId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-rds' --query "StackResources[?ResourceType=='AWS::RDS::DBInstance'].PhysicalResourceId" --output text) >> env_vars.sh
-            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSId --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
-            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $RDSId --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
-            #----
-            #echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier '<< pipeline.parameters.stack-name >>-rds' --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
-            #echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier '<< pipeline.parameters.stack-name >>-rds' --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
+            echo export RDSResourceId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-rds' --query "StackResources[?ResourceType=='AWS::RDS::DBInstance'].PhysicalResourceId" --output text) >> env_vars.sh
+            if [ -n "$RDSResourceId" ]; then
+              echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
+              echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
+            else
+              echo "RDSResourceId($RDSResourceId) is empty"
+              echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier '<< pipeline.parameters.stack-name >>-rds' --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
+              echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier '<< pipeline.parameters.stack-name >>-rds' --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
+            fi
             #----SSM----
             echo "Note: Create SSM parameter on AWS Console, using SecureString and named /<< pipeline.parameters.stack-name >>/rds-pass in advance"
             echo export RDSPass=$(aws ssm get-parameter --name /<< pipeline.parameters.stack-name >>/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
