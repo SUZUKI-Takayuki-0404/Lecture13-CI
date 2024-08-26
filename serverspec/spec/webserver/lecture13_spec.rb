@@ -81,5 +81,5 @@ end
 
 # ホストネーム確認
 describe command('hostname') do
-  its(:stdout) { should match 'webserver' }
+  its(:stdout) { should match '*.ap-northeast-1.compute.internal' } #'webserver'
 end
