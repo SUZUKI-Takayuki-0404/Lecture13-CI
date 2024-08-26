@@ -70,8 +70,8 @@ jobs:
             echo export EC2PublicIP=$(aws ec2 describe-instances --instance-ids $EC2InstanceId --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
             #----RDS----
             echo export RDSResourceID=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-rds' --query "StackResources[?ResourceType=='AWS::RDS::DBInstance'].PhysicalResourceId" --output text) >> env_vars.sh
-            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier 'lecture13-rds' --query DBInstances[].Endpoint[].Address[] --output text) >> env_vars.sh
-            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $(RDSResourceID) --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
+            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceID --query DBInstances[].Endpoint[].Address[] --output text) >> env_vars.sh
+            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier 'lecture13-rds' --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
             #----SSM----
             echo "Note: Create SSM parameter on AWS Console, using SecureString and named /<< pipeline.parameters.stack-name >>/rds-pass in advance"
             echo export RDSPass=$(aws ssm get-parameter --name /<< pipeline.parameters.stack-name >>/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
