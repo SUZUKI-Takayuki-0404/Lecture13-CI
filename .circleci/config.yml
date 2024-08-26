@@ -134,7 +134,7 @@ jobs:
           command: |
             env | grep PATH
             pwd
-            sudo grep PermitUserEnvironment /etc/ssh/sshd_config
+            #sudo grep PermitUserEnvironment /etc/ssh/sshd_config
             export PATH=$PATH:/sbin/ss
             export PATH=$PATH:/usr/sbin/ss
             source ~/.bashrc
@@ -148,6 +148,7 @@ jobs:
           command: |
             cd serverspec
             bundle install
+            pwd
       - run:
           name: execute serverspec tests
           command: |
