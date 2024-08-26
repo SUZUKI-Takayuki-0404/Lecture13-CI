@@ -3,3 +3,5 @@
 .idea/
 ### draft template ###
 cloudformation_template
+serverspec/vendor
+serverspec/.bundle

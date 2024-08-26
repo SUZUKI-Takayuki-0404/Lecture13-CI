@@ -7,6 +7,11 @@ orbs:
   ansible-playbook: orbss/ansible-playbook@0.0.5
   ruby: circleci/ruby@2.1.4
 
+parameters:
+  stack-name:
+    type: string
+    default: "lecture13"  # << pipeline.parameters.stack-name >>
+
 jobs:
   cfn-lint:
     executor: python/default
@@ -107,31 +112,47 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      #- attach_workspace:
-      #    at: .
-      #- run:
-      #    name: check env_var.sh
-      #    command: |
-      #      source env_var.sh
-      #      cat env_var.sh
-      #- run:
-      #    name: read env_var.sh
-      #    command: |
-      #      set -x
-      #      cat env_var.sh >> $BASH_ENV
-      #      cat $BASH_ENV
+      #- add_ssh_keys:
+          #fingerprints:
+            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
+      - attach_workspace:
+          at: .
+      - run:
+          name: input host(Public IP) from env_vars into spec_helper replace command
+          command: |
+            source env_vars.sh
+            cat env_vars.sh
+            mkdir -p ~/.ssh
+            #touch ~/.ssh/config
+            echo "Host webserver" >> ~/.ssh/config
+            echo "  HostName ${EC2PublicIP}" >> ~/.ssh/config
+            echo "  User ec2-user" >> ~/.ssh/config
+            #echo "  IdentityFile >>  ~/.ssh/id_rsa"
+            cat ~/.ssh/config
+#      - run:
+#          name: test command
+#          command: |
+#            env | grep PATH
+#            pwd
+#            export PATH=$PATH:/sbin/ss
+#            export PATH=$PATH:/usr/sbin/ss
+#            source ~/.bashrc
+            #sudo ss -tnl
       - ruby/install:
           version: 3.2.3
-      #- run:
-          #name: Install Dependencies
-          #command: |
-            #cd serverspec
-            #bundle install
-      #- run:
-          #name: execute serverspec tests
-          #command: |
-            #cd serverspec
-            #bundle exec rake spec
+      - ruby/install-deps:
+          app-dir: serverspec
+      - run:
+          name: bundle install for dependencies
+          command: |
+            cd serverspec
+            bundle install
+            pwd
+      - run:
+          name: execute serverspec tests
+          command: |
+            cd serverspec
+            bundle exec rake spec
 
 workflows:
   lecture13-workflow:
@@ -146,6 +167,7 @@ workflows:
       #- execute-ansible:
           #requires:
             #- get-variables-from-cfn
-      - execute-serverspec #:
-          #requires:
-            #- execute-ansible
+      - execute-serverspec:
+          requires:
+            #- execute-ansible        get-variables-from-cfn
+            - get-variables-from-cfn
