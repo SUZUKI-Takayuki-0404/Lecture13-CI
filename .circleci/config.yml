@@ -70,7 +70,7 @@ jobs:
             echo export EC2PublicIP=$(aws ec2 describe-instances --instance-ids $EC2InstanceId --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
             #----RDS----
             RDSResourceId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-rds' --query "StackResources[?ResourceType=='AWS::RDS::DBInstance'].PhysicalResourceId" --output text)
-            echo export RDSResourceId = $RDSResourceId >> env_vars.sh
+            echo export RDSResourceId = $RDSResourceId >> env_vars.sh   # Having separated export from input, due to avoiding "empty $RDSResourceId" error
             echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
             echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
             #----SSM----
@@ -81,9 +81,8 @@ jobs:
             #----ALB----
             echo export ALBArn=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-alb' --query "StackResources[?ResourceType=='AWS::ElasticLoadBalancingV2::LoadBalancer'].PhysicalResourceId" --output text) >> env_vars.sh
             echo export ALBDNSName=$(aws elbv2 describe-load-balancers --load-balancer-arns $ALBArn --query LoadBalancers[].DNSName[] --output text) >> env_vars.sh
-            #----scripts----
+            #----script----
             cat env_vars.sh
-
       - persist_to_workspace:  # Enables users to add files in a workspace, and the "attach_workspace" step does to download contents from it within a job
           root: .
           paths:
@@ -123,22 +122,21 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      #- add_ssh_keys:
-          #fingerprints:
-            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
+      - add_ssh_keys:
+          fingerprints:
+            - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - attach_workspace:
           at: .
       - run:
-          name: input host(Public IP) from env_vars into spec_helper replace command
+          name: input host(Public IP) from env_vars into spec_helper by replace command
           command: |
             source env_vars.sh
             cat env_vars.sh
             mkdir -p ~/.ssh
-            #touch ~/.ssh/config
             echo "Host webserver" >> ~/.ssh/config
             echo "  HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "  User ec2-user" >> ~/.ssh/config
-            #echo "  IdentityFile >>  ~/.ssh/id_rsa"
+            echo "  IdentityFile >>  ~/.ssh/id_rsa"
             cat ~/.ssh/config
       - ruby/install:
           version: 3.2.3
@@ -159,16 +157,16 @@ jobs:
 workflows:
   lecture13-workflow:
     jobs:
-      #- cfn-lint
-      #- execute-cfn:
-          #requires:
-            #- cfn-lint
-      - get-variables-from-cfn #:
-          #requires:
-            #- execute-cfn
-      #- execute-ansible:
-          #requires:
-            #- get-variables-from-cfn
-      #- execute-serverspec:
-          #requires:
-            #- get-variables-from-cfn
+      - cfn-lint
+      - execute-cfn:
+          requires:
+            - cfn-lint
+      - get-variables-from-cfn:
+          requires:
+            - execute-cfn
+      - execute-ansible:
+          requires:
+            - get-variables-from-cfn
+      - execute-serverspec:
+          requires:
+            - get-variables-from-cfn

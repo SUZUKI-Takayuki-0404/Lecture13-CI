@@ -141,4 +141,4 @@
   become_user: root
   ansible.builtin.reboot:
     pre_reboot_delay: 0
-    post_reboot_delay: 30
+    post_reboot_delay: 60
