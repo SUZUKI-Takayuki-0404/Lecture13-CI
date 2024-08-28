@@ -70,7 +70,7 @@ jobs:
             echo export EC2PublicIP=$(aws ec2 describe-instances --instance-ids $EC2InstanceId --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
             #----RDS----
             RDSResourceId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-rds' --query "StackResources[?ResourceType=='AWS::RDS::DBInstance'].PhysicalResourceId" --output text)
-            echo export RDSResourceId = $RDSResourceId >> env_vars.sh   # Having separated export from input, due to avoiding "empty $RDSResourceId" error
+            echo export RDSResourceId=$RDSResourceId >> env_vars.sh   # Having separated export from input, due to avoiding "empty $RDSResourceId" error
             echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
             echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
             #----SSM----
