@@ -168,7 +168,7 @@
     eval "$(anyenv init -)"
     timeout 60 nodenv install 17.9.1
     nodenv global 17.9.1
-  #timeout: 180
+  #timeout: 300
   when: recognize_ruby_node is failed
 
 - name: Add ruby and node to .bash_profile and .bashrc PATH

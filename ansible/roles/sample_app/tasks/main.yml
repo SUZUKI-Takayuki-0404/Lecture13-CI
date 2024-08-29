@@ -128,7 +128,7 @@
   when: not binsetup_result is failed
 
 - name: Set up Sample app
-  ansible.builtin.shell: 'timeout 60 bin/dev'
+  ansible.builtin.shell: 'timeout 120 bin/dev'
   #timeout: 30
   args:
     chdir: /home/ec2-user/raisetech-live8-sample-app/
@@ -141,4 +141,4 @@
   become_user: root
   ansible.builtin.reboot:
     pre_reboot_delay: 0
-    post_reboot_delay: 60
+    post_reboot_delay: 120
