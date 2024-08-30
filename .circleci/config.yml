@@ -10,7 +10,7 @@ orbs:
 parameters:
   stack-name:
     type: string
-    default: "lecture13"  # << pipeline.parameters.stack-name >>
+    default: "lecture13"
 
 jobs:
   cfn-lint:
@@ -113,9 +113,13 @@ jobs:
             - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ansible-playbook/install:
           version: 2.9.23
-      - ansible-playbook/playbook:
-          playbook: ansible/site.yml
-          playbook-options: -i ansible/inventories/host.yml
+      #- ansible-playbook/playbook:
+          #playbook: ansible/site.yml
+          #playbook-options: -i ansible/inventories/host.yml
+      - run:
+          name: execute ansible playbook with timeout extended
+          command: ansible-playbook ansible/site.yml
+          no_output_timeout: 30m
 
 #----Serverspec----
   execute-serverspec:
