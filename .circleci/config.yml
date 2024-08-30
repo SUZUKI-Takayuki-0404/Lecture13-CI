@@ -126,9 +126,6 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      #- add_ssh_keys:
-          #fingerprints:
-            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - attach_workspace:
           at: .
       - run:
@@ -161,13 +158,13 @@ jobs:
 workflows:
   lecture13-workflow:
     jobs:
-      #- cfn-lint
-      #- execute-cfn:
-          #requires:
-            #- cfn-lint
-      - get-variables-from-cfn #:
-          #requires:
-            #- execute-cfn
+      - cfn-lint
+      - execute-cfn:
+          requires:
+            - cfn-lint
+      - get-variables-from-cfn:
+          requires:
+            - execute-cfn
       - execute-ansible:
           requires:
             - get-variables-from-cfn
