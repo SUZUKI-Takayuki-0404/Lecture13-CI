@@ -102,7 +102,6 @@
   args:
     chdir: /home/ec2-user/raisetech-live8-sample-app/
   register: binsetup_result
-  #timeout: 1800
   when: recognize_gem_sass_rails is failed
 
 - name: Output binsetup_result
@@ -128,8 +127,7 @@
   when: not binsetup_result is failed
 
 - name: Set up Sample app
-  ansible.builtin.shell: 'timeout 60 bin/dev'
-  #timeout: 30
+  ansible.builtin.shell: 'timeout 120 bin/dev'
   args:
     chdir: /home/ec2-user/raisetech-live8-sample-app/
   changed_when: no
@@ -141,4 +139,4 @@
   become_user: root
   ansible.builtin.reboot:
     pre_reboot_delay: 0
-    post_reboot_delay: 30
+    post_reboot_delay: 120

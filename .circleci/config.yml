@@ -10,7 +10,7 @@ orbs:
 parameters:
   stack-name:
     type: string
-    default: "lecture13"  # << pipeline.parameters.stack-name >>
+    default: "lecture13"
 
 jobs:
   cfn-lint:
@@ -33,23 +33,23 @@ jobs:
           aws_secret_access_key: AWS_SECRET_ACCESS_KEY
           region: AWS_DEFAULT_REGION
       - aws-cloudformation/deploy:
-          stack-name: "lecture13-vpc"
+          stack-name: "<< pipeline.parameters.stack-name >>-vpc"
           template-file-path: "cloudformation/lect13-vpc.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13-ec2"
+          stack-name: "<< pipeline.parameters.stack-name >>-ec2"
           template-file-path: "cloudformation/lect13-ec2.yml"
           capabilities: CAPABILITY_NAMED_IAM
       - aws-cloudformation/deploy:
-          stack-name: "lecture13-s3"
+          stack-name: "<< pipeline.parameters.stack-name >>-s3"
           template-file-path: "cloudformation/lect13-s3.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13-rds"
+          stack-name: "<< pipeline.parameters.stack-name >>-rds"
           template-file-path: "cloudformation/lect13-rds.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13-alb"
+          stack-name: "<< pipeline.parameters.stack-name >>-alb"
           template-file-path: "cloudformation/lect13-alb.yml"
       - aws-cloudformation/deploy:
-          stack-name: "lecture13-cw"
+          stack-name: "<< pipeline.parameters.stack-name >>-cw"
           template-file-path: "cloudformation/lect13-cw.yml"
           capabilities: CAPABILITY_NAMED_IAM
 
@@ -65,15 +65,25 @@ jobs:
       - run:  # Get values of EC2 Public IP, RDS Username, RDS Password, RDS Endpoint and ALB DNS Host, using AWS CLI
           name: set environment variables in env_vars.sh
           command: |
-            echo export EC2PublicIP=$(aws ec2 describe-instances --filters Name=tag:Name,Values=lecture13-ec2 --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
-            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].Endpoint[].Address[] --output text) >> env_vars.sh
-            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier lecture13-rds --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
-            echo export RDSPass=$(aws ssm get-parameter --name /lecture13/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
-            echo export S3Name=$(aws cloudformation describe-stack-resources --stack-name lecture13-s3 --query StackResources[].PhysicalResourceId[] --output text) >> env_vars.sh
-            echo export ALBDNSName=$(aws elbv2 describe-load-balancers --names lecture13-lb --query LoadBalancers[].DNSName[] --output text) >> env_vars.sh
+            #----EC2----
+            echo export EC2InstanceId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-ec2' --query "StackResources[?ResourceType=='AWS::EC2::Instance'].PhysicalResourceId" --output text) >> env_vars.sh
+            echo export EC2PublicIP=$(aws ec2 describe-instances --instance-ids $EC2InstanceId --query Reservations[].Instances[].PublicIpAddress[] --output text) >> env_vars.sh
+            #----RDS----
+            RDSResourceId=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-rds' --query "StackResources[?ResourceType=='AWS::RDS::DBInstance'].PhysicalResourceId" --output text)
+            echo export RDSResourceId=$RDSResourceId >> env_vars.sh   # Having separated export from input, due to avoiding "empty $RDSResourceId" error
+            echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
+            echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
+            #----SSM----
+            echo "Note: Create SSM parameter on AWS Console, using SecureString and named /<< pipeline.parameters.stack-name >>/rds-pass in advance"
+            echo export RDSPass=$(aws ssm get-parameter --name /<< pipeline.parameters.stack-name >>/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
+            #----S3----
+            echo export S3Name=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-s3' --query StackResources[].PhysicalResourceId[] --output text) >> env_vars.sh
+            #----ALB----
+            echo export ALBArn=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-alb' --query "StackResources[?ResourceType=='AWS::ElasticLoadBalancingV2::LoadBalancer'].PhysicalResourceId" --output text) >> env_vars.sh
+            echo export ALBDNSName=$(aws elbv2 describe-load-balancers --load-balancer-arns $ALBArn --query LoadBalancers[].DNSName[] --output text) >> env_vars.sh
+            #----script----
             cat env_vars.sh
-      # The "persist_to_workspace" step enables users to add files in a workspace, and the "attach_workspace" step does to download contents from it within a job
-      - persist_to_workspace:
+      - persist_to_workspace:  # Enables users to add files in a workspace, and the "attach_workspace" step does to download contents from it within a job
           root: .
           paths:
             - env_vars.sh
@@ -103,41 +113,32 @@ jobs:
             - SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - ansible-playbook/install:
           version: 2.9.23
-      - ansible-playbook/playbook:
-          playbook: ansible/site.yml
-          playbook-options: -i ansible/inventories/host.yml
+      #- ansible-playbook/playbook:
+          #playbook: ansible/site.yml
+          #playbook-options: -i ansible/inventories/host.yml
+      - run:
+          name: execute ansible playbook with timeout extended
+          command: ansible-playbook -i ansible/inventories/host.yml ansible/site.yml
+          no_output_timeout: 30m
 
 #----Serverspec----
   execute-serverspec:
     executor: ruby/default
     steps:
       - checkout
-      #- add_ssh_keys:
-          #fingerprints:
-            #- SHA256:JOh3Qwxu/5trsr0W0Cs5tpYk62jg3cIsuw9f/U1yBsQ
       - attach_workspace:
           at: .
       - run:
-          name: input host(Public IP) from env_vars into spec_helper replace command
+          name: input host(Public IP) from env_vars into spec_helper by replace command
           command: |
             source env_vars.sh
             cat env_vars.sh
             mkdir -p ~/.ssh
-            #touch ~/.ssh/config
             echo "Host webserver" >> ~/.ssh/config
             echo "  HostName ${EC2PublicIP}" >> ~/.ssh/config
             echo "  User ec2-user" >> ~/.ssh/config
             #echo "  IdentityFile >>  ~/.ssh/id_rsa"
             cat ~/.ssh/config
-#      - run:
-#          name: test command
-#          command: |
-#            env | grep PATH
-#            pwd
-#            export PATH=$PATH:/sbin/ss
-#            export PATH=$PATH:/usr/sbin/ss
-#            source ~/.bashrc
-            #sudo ss -tnl
       - ruby/install:
           version: 3.2.3
       - ruby/install-deps:
@@ -157,17 +158,16 @@ jobs:
 workflows:
   lecture13-workflow:
     jobs:
-      #- cfn-lint
-      #- execute-cfn:
-          #requires:
-            #- cfn-lint
-      - get-variables-from-cfn #:
-          #requires:
-            #- execute-cfn
-      #- execute-ansible:
-          #requires:
-            #- get-variables-from-cfn
+      - cfn-lint
+      - execute-cfn:
+          requires:
+            - cfn-lint
+      - get-variables-from-cfn:
+          requires:
+            - execute-cfn
+      - execute-ansible:
+          requires:
+            - get-variables-from-cfn
       - execute-serverspec:
           requires:
-            #- execute-ansible        get-variables-from-cfn
-            - get-variables-from-cfn
+            - execute-ansible
