@@ -118,7 +118,7 @@ jobs:
           #playbook-options: -i ansible/inventories/host.yml
       - run:
           name: execute ansible playbook with timeout extended
-          command: ansible-playbook ansible/site.yml
+          command: ansible-playbook -i ansible/inventories/host.yml ansible/site.yml
           no_output_timeout: 30m
 
 #----Serverspec----
@@ -161,13 +161,13 @@ jobs:
 workflows:
   lecture13-workflow:
     jobs:
-      - cfn-lint
-      - execute-cfn:
-          requires:
-            - cfn-lint
-      - get-variables-from-cfn:
-          requires:
-            - execute-cfn
+      #- cfn-lint
+      #- execute-cfn:
+          #requires:
+            #- cfn-lint
+      - get-variables-from-cfn #:
+          #requires:
+            #- execute-cfn
       - execute-ansible:
           requires:
             - get-variables-from-cfn
