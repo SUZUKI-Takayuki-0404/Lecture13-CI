@@ -29,8 +29,8 @@
 
 - name: Install remi-release-7 and ImageMagick7
   ansible.builtin.shell: |
-    timeout 600 sudo rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-    timeout 600 sudo yum install -y --enablerepo=remi ImageMagick7 ImageMagick7-devel
+    sudo rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    sudo yum install -y --enablerepo=remi ImageMagick7 ImageMagick7-devel
   when: recognize_imagemagick is failed
 
 - name: Install vips packages
