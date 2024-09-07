@@ -74,7 +74,6 @@ jobs:
             echo export RDSEndPoint=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].Endpoint.Address --output text) >> env_vars.sh
             echo export RDSUser=$(aws rds describe-db-instances --db-instance-identifier $RDSResourceId --query DBInstances[].MasterUsername[] --output text) >> env_vars.sh
             #----SSM----
-            echo "Note: Create SSM parameter on AWS Console, using SecureString and named /<< pipeline.parameters.stack-name >>/rds-pass in advance"
             echo export RDSPass=$(aws ssm get-parameter --name /<< pipeline.parameters.stack-name >>/rds-pass --with-decryption --query Parameter.Value --output text) >> env_vars.sh
             #----S3----
             echo export S3Name=$(aws cloudformation describe-stack-resources --stack-name '<< pipeline.parameters.stack-name >>-s3' --query StackResources[].PhysicalResourceId[] --output text) >> env_vars.sh

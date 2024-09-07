@@ -65,11 +65,6 @@ describe port(listen_port80) do
 end
 
 # ポート22番がリッスンであること
-describe command('sudo /sbin/ss -tunl | grep :22') do
-  its(:stdout) { should contain('22')  }
-end
-
-# ポート22番がリッスンであること
 describe port(listen_port22) do
   it { should be_listening }
 end
