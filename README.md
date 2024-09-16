@@ -16,7 +16,7 @@ CircleCI の[サンプル](https://github.com/MasatoshiMizumoto/raisetech_docume
 
 > [!NOTE]  
 > 予め、以下を準備しておくこと（詳細は[課題13](https://github.com/SUZUKI-Takayuki-0404/RaiseTechAWS/blob/lecture13/lecture13.md)を参照）  
-> - CircleCI要のIAMユーザー・許可ポリシー・アクセスキー  
+> - CircleCI用のIAMユーザー・許可ポリシー・アクセスキー  
 > - EC2 SSH接続用のpemキー  
 > - Systems Manager  
 >   - SNSのメール通知機能で使用するメールアドレス\(String\)  
